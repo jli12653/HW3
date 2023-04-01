@@ -33,7 +33,7 @@ void scan_omp(long* prefix_sum, const long* A, long n) {
       prefix_sum[i+1] = s;
     }
     correction[t] = s;
-    //printf("correction from thread %d of %d is %d\n", p, t, correction[t]);
+    printf("correction from thread %d of %d is %d\n", p, t, correction[t]);
     
     long offset = 0;
     
@@ -56,7 +56,7 @@ void scan_omp(long* prefix_sum, const long* A, long n) {
 }
 
 int main() {
-  long N = 10;
+  long N = 9;
   long* A = (long*) malloc(N * sizeof(long));
   long* B0 = (long*) malloc(N * sizeof(long));
   long* B1 = (long*) malloc(N * sizeof(long));
