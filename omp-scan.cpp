@@ -14,7 +14,7 @@ void scan_seq(long* prefix_sum, const long* A, long n) {
 }
 
 void scan_omp(long* prefix_sum, const long* A, long n) {
-  printf("maximum number of threads = %d\n", omp_get_max_threads());
+  //printf("maximum number of threads = %d\n", omp_get_max_threads());
   long* correction = (long*) malloc(omp_get_max_threads() * sizeof(long));
   
   if (n == 0) return;
@@ -43,7 +43,7 @@ void scan_omp(long* prefix_sum, const long* A, long n) {
     
     #pragma omp for schedule(static)
     for (long i = 1; i < n; i++) {
-    prefix_sum[i] += offset;
+      prefix_sum[i] += offset;
     }
   }
   
