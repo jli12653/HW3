@@ -14,7 +14,6 @@ void scan_seq(long* prefix_sum, const long* A, long n) {
 }
 
 void scan_omp(long* prefix_sum, const long* A, long n) {
-  //printf("maximum number of threads = %d\n", omp_get_max_threads());
   long* correction = (long*) malloc(omp_get_max_threads() * sizeof(long));
   
   if (n == 0) return;
@@ -24,28 +23,21 @@ void scan_omp(long* prefix_sum, const long* A, long n) {
   {
     int p = omp_get_num_threads();
     int t = omp_get_thread_num();
-    //printf("hello world from thread %d of %d\n", p, t);
     
     long s = 0;
     #pragma omp for schedule(static)
     for (long i = 0; i < n-1; i++) {
-      //printf("s from thread %d of %d is %d before\n", p, t, s);
-      //printf("s + A from thread %d of %d is %d after\n", p, t, s+A[i]);
       s += A[i];
-      //printf("s from thread %d of %d is %d after\n", p, t, s);
-      //printf("A assigned to thread %d of %d is %d\n", p, t, A[i]);
       prefix_sum[i+1] = s;
     }
     correction[t] = s;
     #pragma omp barrier
-    //printf("correction from thread %d of %d is %d\n", p, t, correction[t]);
     
     long offset = 0;
     
     for (int i = 0; i < t; i++){
       offset += correction[i];
     }
-    //printf("offset from thread %d of %d is %d\n", p, t, offset);
     
     #pragma omp for schedule(static)
     for (long i = 1; i < n; i++) {
@@ -61,27 +53,24 @@ void scan_omp(long* prefix_sum, const long* A, long n) {
 }
 
 int main() {
-  long N = 9;
+  long N = 100000000;
   long* A = (long*) malloc(N * sizeof(long));
   long* B0 = (long*) malloc(N * sizeof(long));
   long* B1 = (long*) malloc(N * sizeof(long));
   for (long i = 0; i < N; i++) A[i] = rand();
   for (long i = 0; i < N; i++) B1[i] = 0;
   
-  //for (long i = 0; i < N; i++) printf("%d = %d\n", i, A[i]);
-  
   
   double tt = omp_get_wtime();
   scan_seq(B0, A, N);
   printf("sequential-scan = %fs\n", omp_get_wtime() - tt);
   
-  //for (long i = 0; i < N; i++) printf("%d = %d\n", i, B0[i]);
+  
 
   tt = omp_get_wtime();
   scan_omp(B1, A, N);
   printf("parallel-scan   = %fs\n", omp_get_wtime() - tt);
   
-  //for (long i = 0; i < N; i++) printf("%d = %d\n", i, B1[i]);;
 
   long err = 0;
   for (long i = 0; i < N; i++) err = std::max(err, std::abs(B0[i] - B1[i]));
