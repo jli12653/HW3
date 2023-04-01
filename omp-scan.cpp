@@ -56,12 +56,14 @@ void scan_omp(long* prefix_sum, const long* A, long n) {
 }
 
 int main() {
-  long N = 100000000;
+  long N = 10;
   long* A = (long*) malloc(N * sizeof(long));
   long* B0 = (long*) malloc(N * sizeof(long));
   long* B1 = (long*) malloc(N * sizeof(long));
   for (long i = 0; i < N; i++) A[i] = rand();
   for (long i = 0; i < N; i++) B1[i] = 0;
+  
+  printf(A);
   
   double tt = omp_get_wtime();
   scan_seq(B0, A, N);
