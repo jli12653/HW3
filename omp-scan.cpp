@@ -63,7 +63,7 @@ int main() {
   for (long i = 0; i < N; i++) A[i] = rand();
   for (long i = 0; i < N; i++) B1[i] = 0;
   
-  for (long i = 0; i < N; i++) printf("i = %d\n", A[i]);;
+  for (long i = 0; i < N; i++) printf("%d = %d\n", i, A[i]);;
   
   
   double tt = omp_get_wtime();
