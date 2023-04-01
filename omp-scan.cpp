@@ -63,7 +63,8 @@ int main() {
   for (long i = 0; i < N; i++) A[i] = rand();
   for (long i = 0; i < N; i++) B1[i] = 0;
   
-  printf(A);
+  for (long i = 0; i < N; i++) printf(A[i]);;
+  
   
   double tt = omp_get_wtime();
   scan_seq(B0, A, N);
