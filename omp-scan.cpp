@@ -17,7 +17,7 @@ void scan_omp(long* prefix_sum, const long* A, long n) {
   int p = omp_get_num_threads();
   int t = omp_get_thread_num();
   
-  long* correction = (long*) malloc(p * sizeof(long));
+  long* correction = (long*) malloc((p+1) * sizeof(long));
   
   if (n == 0) return;
   prefix_sum[0] = 0;
@@ -30,11 +30,11 @@ void scan_omp(long* prefix_sum, const long* A, long n) {
       s += A[i];
       prefix_sum[i+1] = s;
     }
-    correction[t] = s;
+    correction[t+1] = s;
     
     long offset = 0;
     
-    for (int i = 0; i < t; i++){
+    for (int i = 0; i < t+1; i++){
       offset += correction[i];
     }
     
