@@ -14,7 +14,7 @@ void scan_seq(long* prefix_sum, const long* A, long n) {
 }
 
 void scan_omp(long* prefix_sum, const long* A, long n) {
-  long* correction = (long*) malloc(omp_get_max_threads() * sizeof(long));
+  long* correction = (long*) malloc(16 * sizeof(long));
   
   if (n == 0) return;
   prefix_sum[0] = 0;
