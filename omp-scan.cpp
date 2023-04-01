@@ -29,9 +29,10 @@ void scan_omp(long* prefix_sum, const long* A, long n) {
     long s = 0;
     #pragma omp for schedule(static)
     for (long i = 0; i < n-1; i++) {
+      printf("s from thread %d of %d is %d before\n", p, t, s);
       s += A[i];
-      printf("s from thread %d of %d is %d\n", p, t, s);
-      printf("A assigned to thread %d of %d is %d\n", p, t, A[i]);
+      printf("s from thread %d of %d is %d after\n", p, t, s);
+      //printf("A assigned to thread %d of %d is %d\n", p, t, A[i]);
       prefix_sum[i+1] = s;
     }
     correction[t] = s;
