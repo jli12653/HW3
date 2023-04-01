@@ -31,6 +31,7 @@ void scan_omp(long* prefix_sum, const long* A, long n) {
     for (long i = 0; i < n-1; i++) {
       s += A[i];
       printf("s from thread %d of %d is %d\n", p, t, s);
+      printf("A assigned to thread %d of %d is %d\n", p, t, A[i]);
       prefix_sum[i+1] = s;
     }
     correction[t] = s;
