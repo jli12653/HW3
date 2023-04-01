@@ -24,7 +24,7 @@ void scan_omp(long* prefix_sum, const long* A, long n) {
   {
     int p = omp_get_num_threads();
     int t = omp_get_thread_num();
-    printf("hello world from thread %d of %d\n", p, t);
+    //printf("hello world from thread %d of %d\n", p, t);
     
     long s = 0;
     #pragma omp for schedule(static)
@@ -33,7 +33,7 @@ void scan_omp(long* prefix_sum, const long* A, long n) {
       prefix_sum[i+1] = s;
     }
     correction[t] = s;
-    printf("correction from thread %d of %d is %d\n", p, t, correction[t]);
+    //printf("correction from thread %d of %d is %d\n", p, t, correction[t]);
     
     long offset = 0;
     
