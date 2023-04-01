@@ -24,7 +24,7 @@ void scan_omp(long* prefix_sum, const long* A, long n) {
   
   #pragma omp parallel
   {
-    long sum = 0;
+    long s = 0;
     #pragma omp for schedule(static)
     for (long i = 0; i < n-1; i++) {
       s += A[i];
