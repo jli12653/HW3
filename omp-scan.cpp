@@ -37,6 +37,7 @@ void scan_omp(long* prefix_sum, const long* A, long n) {
       prefix_sum[i+1] = s;
     }
     correction[t] = s;
+    #pragma omp barrier
     //printf("correction from thread %d of %d is %d\n", p, t, correction[t]);
     
     long offset = 0;
