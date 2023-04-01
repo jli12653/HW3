@@ -14,14 +14,14 @@ void scan_seq(long* prefix_sum, const long* A, long n) {
 }
 
 void scan_omp(long* prefix_sum, const long* A, long n) {
-  int p = omp_get_num_threads();
-  long* correction = (long*) malloc(p * sizeof(long));
+  long* correction = (long*) malloc(omp_get_max_threads() * sizeof(long));
   
   if (n == 0) return;
   prefix_sum[0] = 0;
   
   #pragma omp parallel
   {
+    int p = omp_get_num_threads();
     int t = omp_get_thread_num();
     
     long s = 0;
