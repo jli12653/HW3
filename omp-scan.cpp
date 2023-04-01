@@ -40,6 +40,7 @@ void scan_omp(long* prefix_sum, const long* A, long n) {
     for (int i = 0; i < t; i++){
       offset += correction[i];
     }
+    printf("offset from thread %d of %d is %d\n", p, t, offset);
     
     #pragma omp for schedule(static)
     for (long i = 1; i < n; i++) {
