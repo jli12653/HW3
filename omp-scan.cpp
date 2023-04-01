@@ -72,13 +72,13 @@ int main() {
   
   double tt = omp_get_wtime();
   scan_seq(B0, A, N);
-  printf("sequential-scan = %fs\n", omp_get_wtime() - tt);
+  //printf("sequential-scan = %fs\n", omp_get_wtime() - tt);
   
   for (long i = 0; i < N; i++) printf("%d = %d\n", i, B0[i]);
 
   tt = omp_get_wtime();
   scan_omp(B1, A, N);
-  printf("parallel-scan   = %fs\n", omp_get_wtime() - tt);
+  //printf("parallel-scan   = %fs\n", omp_get_wtime() - tt);
   
   for (long i = 0; i < N; i++) printf("%d = %d\n", i, B1[i]);;
 
