@@ -43,7 +43,7 @@ void Jacobi(int N, double *u) {
 	
 		double U_down = u[down];
 		
-    uu[i] = 0.25*(hsq + U_up + U_down + U_right + U_left);
+    uu[i] = 0.25*(hsq + u[up] + u[down] + u[right] + u[left]);
 	}
 
 	
