@@ -10,33 +10,37 @@
 // Given that we are using f = 1, so I ingore the term f, just replace it with 1.
 void Jacobi(long N, double *u) {
   double h = 1.0/(N+1);
-  double *uu = (double*) malloc((N+2)*(N+2) * sizeof(double)); // (N+2)^2 
+  double *uu = (double*) malloc(N*N * sizeof(double)); // (N+2)^2 
+  long up, down, left, right;
 	
   // creating the entire plane of points (N+2)*(N+2)
   #pragma omp parallel for
-  for (long i = 0; i < (N+2)*(N+2); i++) {
-  	if (i / (N+2) == 0 || i / (N+2) == N + 1 ){
-		uu[i] = 0.0;	
-	}
-	else{
-		if (i % (N+2) == 0 || i % (N+2) == N+1){ 
-			uu[i] = 0.0;
-		}
-		else {
-			double temp = u[(i/(N+2)-1)*N + (i % (N+2)-1)];
-			uu[i] = temp;
-		}  
-	}
+  for (long i = 0; i < N*N; i++) {
+  	up = i + N;
+	down = i - N;
+	left = i % N - 1;
+	rigth = i % N + 1;
+	
+	double U_up, U_down, U_left, U_right = 0.0
+	
+	if (up >= N^2) U_up = 0;
+	else U_up = u[up]
+		
+	if (left < 0) U_left = 0;
+	else U_left = u[i-1]
+	
+	if (right >= N) U_right = 0;
+	else U_right = u[i+1]
+	
+	if (down < 0) U_down = 0;
+	else U_down = u[down]
+		
+        uu[i] = 1.0/4*(h*h + U_up + U_down + U_right + U_left)
   }
 
   #pragma omp parallel for
   for (long i = 0; i < N*N; i++) {
-	long j = (i/N+1)*(N+2) + i % N + 1;
-	double U = uu[j-1];
-	double UU = uu[j+1];
-	double UUU = uu[j - (N+2)];
-	double UUUU = uu[j + (N+2)];
-	double NewU = 1.0/4*(h*h+ U  + UU + UUU + UUUU);
+	double NewU = uu[i];
   	u[i] = NewU;  
   }
 
@@ -47,37 +51,34 @@ void Jacobi(long N, double *u) {
 double residual(long N, double* u){
   double h = 1.0/(N+1);
   double r, temp = 0.0;
-  long j;
-  double *uu = (double*) malloc((N+2)*(N+2) * sizeof(double)); // (N+2)^2 
-	
-	
-  // creating the entire plane of points (N+2)*(N+2)
-  #pragma omp parallel for
-  for (long i = 0; i < (N+2)*(N+2); i++) {
-  	if (i / (N+2) == 0 || i / (N+2) == N + 1 ){
-		uu[i] = 0;	
-	}
-	else{
-		if (i % (N+2) == 0 || i % (N+2) == N+1){ 
-			uu[i] = 0;
-		}
-		else {
-			double A = u[(i/(N+2)-1)*N + (i % (N+2)-1)];
-			uu[i] = A;
-		}  
-	}
-  }
-	
-  printf("creation is done\n");
+  long up, down, left, right;
+  double U_up, U_down, U_left, U_right, U = 0.0
 
   #pragma omp parallel for reduction (+:r)
   for (long i = 0; i < N*N; i++) {
-	j = (i/N+1)*(N+2) + i % N + 1;
-	temp = (4.0*uu[j] - uu[j-1] - uu[j+1] - uu[j - (N+2)] - uu[j + (N+2)])/h/h - 1;
+	up = i + N;
+	down = i - N;
+	left = i % N - 1;
+	rigth = i % N + 1;
+	  
+	U = u[i];
+	
+	if (up >= N^2) U_up = 0;
+	else U_up = u[up]
+		
+	if (left < 0) U_left = 0;
+	else U_left = u[i-1]
+	
+	if (right >= N) U_right = 0;
+	else U_right = u[i+1]
+	
+	if (down < 0) U_down = 0;
+	else U_down = u[down]
+	
+	temp = (4.0*U - U_up - U_down - U_left - U_right)/h/h - 1.0;
   	r += temp * temp;  
   }
 
-  free(uu);
 	
   return sqrt(r);
 }
