@@ -119,7 +119,7 @@ int main(int argc, char** argv) {
   for (long i = 0; i <=N+1; i++) {
 	for (long j = 0; j <=N+1; j++) {
 		k = i * (N + 2) + j;
-		printf("%d", u[k]);
+		printf("%d  ", u[k]);
 	}
 	printf("\n");
   }
@@ -140,7 +140,7 @@ int main(int argc, char** argv) {
   	for (long i = 0; i <=N+1; i++) {
 		for (long j = 0; j <=N+1; j++) {
 			k = i * (N + 2) + j;
-			printf("%d", u[k]);
+			printf("%d  ", u[k]);
 	}
 		printf("\n");
   	}
