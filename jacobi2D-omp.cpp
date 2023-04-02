@@ -10,8 +10,10 @@
 #include <cmath>
 #include <string.h>
 
-#if defined(_OPENMP)
+#ifdef _OPENMP
 #include <omp.h>
+#else
+#include "utils.h"
 #endif
 
 // Given that we are using f = 1, so I ingore the term f, just replace it with 1.
