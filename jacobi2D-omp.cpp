@@ -115,7 +115,7 @@ double residual(int N, double* u){
 
 int main(int argc, char** argv) {
   int k = 0;
-  int N = 4;
+  int N = 10;
 
   printf(" Iteration       Residual\n");
   
@@ -127,15 +127,15 @@ int main(int argc, char** argv) {
   for (int i = 0; i < (N+2)*(N+2); i++) u[i] = 0.0;
 
 
-  printf("=============================================================\n");
-  for (int i = 0; i <=N+1; i++) {
-	for (int j = 0; j <=N+1; j++) {
-		k = i * (N + 2) + j;
-		printf("%f  ", u[k]);
-	}
-	printf("\n");
-  }
-  printf("=============================================================\n");
+//   printf("=============================================================\n");
+//   for (int i = 0; i <=N+1; i++) {
+// 	for (int j = 0; j <=N+1; j++) {
+// 		k = i * (N + 2) + j;
+// 		printf("%f  ", u[k]);
+// 	}
+// 	printf("\n");
+//   }
+//   printf("=============================================================\n");
 	
   double Res = residual(N , u);
   double res = 0.0;
@@ -145,18 +145,18 @@ int main(int argc, char** argv) {
   
   printf("%10d %10f\n", iter, Res);
 
-  while (iter<10 && Rr <= 1e4){
+  while (iter<5000 && Rr <= 1e4){
    	Jacobi(N, u);
 	  
-	printf("=============================================================\n");
-  	for (int i = 0; i <=N+1; i++) {
-		for (int j = 0; j <=N+1; j++) {
-			k = i * (N + 2) + j;
-			printf("%f  ", u[k]);
-	}
-		printf("\n");
-  	}
-  	printf("=============================================================\n");  
+// 	printf("=============================================================\n");
+//   	for (int i = 0; i <=N+1; i++) {
+// 		for (int j = 0; j <=N+1; j++) {
+// 			k = i * (N + 2) + j;
+// 			printf("%f  ", u[k]);
+// 	}
+// 		printf("\n");
+//   	}
+//   	printf("=============================================================\n");  
 	  
 	
    	res = residual(N,u);
