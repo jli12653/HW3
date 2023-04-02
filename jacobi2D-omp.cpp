@@ -62,10 +62,10 @@ void Jacobi(int N, double *u) {
 
 #pragma omp parallel for
   for (int i = 1; i <=N; i++) {
-	for (int j = 1; j <=N; j++) {
-		k = i * (N + 2) + j;
-		double U = uu[k];
-		u[k] = U;
+    for (int j = 1; j <=N; j++) {
+      k = i * (N + 2) + j;
+      double U = uu[k];
+      u[k] = U;
 	}
   }
 
