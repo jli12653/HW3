@@ -43,7 +43,7 @@ void Jacobi(long N, double *u) {
 	
 		U_down = u[down];
 		
-        	uu[i] = 1.0/4*(hsq + U_up + U_down + U_right + U_left);
+        	uu[k] = 1.0/4*(hsq + U_up + U_down + U_right + U_left);
 	}
   }
 
