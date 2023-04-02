@@ -8,20 +8,18 @@
 #endif
 
 // Given that we are using f = 1, so I ingore the term f, just replace it with 1.
-void Jacobi( long N, double *u) {
+void Jacobi(long N, double *u) {
   double h = 1.0/(N+1);
-  double *uu = (double*) malloc((N+2)*(N+2) * sizeof(double)); // N^2 
+  double *uu = (double*) malloc((N+2)*(N+2) * sizeof(double)); // (N+2)^2 
 	
+  // creating the entire plane of points (N+2)*(N+2)
   #pragma omp parallel for
-  for (int i = 0; i < (N+2)*(N+2); i++) {
+  for (long i = 0; i < (N+2)*(N+2); i++) {
   	if (i / (N+2) == 0 || i / (N+2) == N + 1 ){
 		uu[i] = 0;	
 	}
 	else{
-		if (i % (N+2) == 0){ 
-			uu[i] = 0;
-		}
-		else if (i % (N+2) == N+1){ 
+		if (i % (N+2) == 0 || i % (N+2) == N+1){ 
 			uu[i] = 0;
 		}
 		else {
@@ -31,8 +29,9 @@ void Jacobi( long N, double *u) {
   }
 
   #pragma omp parallel for
-  for (int i = 0; i < N*N; i++) {
-	double U = 1.0/4*(h*h+ uu[i-1] + uu[i+1] + uu[i - (N+2)] + uu[i+(N+2)]);
+  for (long i = 0; i < N*N; i++) {
+	long j = (i/N+1)*(N+2) + i % N + 1
+	double U = 1.0/4*(h*h+ uu[j-1] + uu[j+1] + uu[j - (N+2)] + uu[j+(N+2)]);
   	u[i] = U;  
   }
 
@@ -41,15 +40,11 @@ void Jacobi( long N, double *u) {
 
 
 double residual(long N, double* u){
-	double h = 1.0/N;
 	double r = 0.0;
 	
-	
-	for (int i=0; i<N; i++){
-		if (i == 0) {double U=u[i]; double UU = u[i+1]; r += pow(((2*U-UU)/h/h-1.0),2);}
-		else if (i == N-1) {double U=u[i]; double UU = u[i-1]; r += pow(((2*U-UU)/h/h-1.0),2);}
-		else {double U=u[i]; double UU = u[i+1]; double UUU = u[i-1]; r += pow(((-UUU+2*U-UU)/h/h-1.0),2);}
-          	
+	for (long i=0; i<N*N; i++){
+		double U = u[i]
+		r += pow(U-1.0,2)	
   }	
 	return sqrt(r);
 } 
