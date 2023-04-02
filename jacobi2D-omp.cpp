@@ -47,7 +47,7 @@ void Jacobi(int N, double *u) {
 	}
   }
 	
-   printf("hsq is %d  \n", hsq);
+   printf("hsq is %f  \n", hsq);
 //   printf("=============================================================\n");
 //   for (int i = 0; i <=N+1; i++) {
 // 	for (int j = 0; j <=N+1; j++) {
@@ -79,7 +79,7 @@ double residual(int N, double* u){
   int k, up, down, left, right;
   double U_up, U_down, U_left, U_right, U;
 
-	printf("re    hsq is %d  \n", h);
+	printf("re    hsq is %f  \n", h);
 	
   #pragma omp parallel for reduction (+:r)
   for (int i = 1; i <=N; i++) {
@@ -130,17 +130,17 @@ int main(int argc, char** argv) {
 
 //   for (int i = 0; i < (N+2)*(N+2); i++) printf("%d  ", u[k]);
 //   printf("\n");
-  printf("u[0] is %d  \n", u[0]);
+  printf("u[0] is %f  \n", u[0]);
   printf("=============================================================\n");
   for (int i = 0; i <=N+1; i++) {
 	for (int j = 0; j <=N+1; j++) {
 		k = i * (N + 2) + j;
-		printf("%d  ", u[k]);
+		printf("%f  ", u[k]);
 	}
 	printf("\n");
   }
   printf("=============================================================\n");
-  printf("u[0] is %d  \n", u[0]);
+  printf("u[0] is %f  \n", u[0]);
 	
   double Res = residual(N , u);
   double res = 0.0;
@@ -157,7 +157,7 @@ int main(int argc, char** argv) {
   	for (int i = 0; i <=N+1; i++) {
 		for (int j = 0; j <=N+1; j++) {
 			k = i * (N + 2) + j;
-			printf("%d  ", u[k]);
+			printf("%f  ", u[k]);
 	}
 		printf("\n");
   	}
