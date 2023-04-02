@@ -74,20 +74,16 @@ double residual(int N, double* u){
   double h = 1.0/(N+1);
   double invhsq = 1.0/h/h;
   double r, temp = 0.0;
-  int k, up, down, left, right;
 	
-//#pragma omp parallel for reduction (+:r)
+
   for (int i = 1; i <=N; i++) {
-	for (int j = 1; j <=N; j++) {
-		k = i * (N + 2) + j;
-		up = k + N + 2;
-		down = k - N -2;
-		left = k - 1;
-		right = k + 1;
-	
-		temp = ((4.0*u[k] - u[up] - u[down] - u[left] - u[right])*invhsq - 1.0);
-	  
-  		r += temp * temp; 
+#pragma omp parallel for reduction (+:r)
+    for (int j = 1; j <=N; j++) {
+      int k = i * (N + 2) + j;
+    
+      temp = ((4.0*u[k] - u[k + N + 2] - u[k - N -2] - u[k - 1] - u[k + 1])*invhsq - 1.0);
+      
+      r += temp * temp; 
 	}
   }
 
