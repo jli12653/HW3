@@ -112,18 +112,20 @@ int main(int argc, char** argv) {
  
 
   // Initialize u
-  //#pragma omp parallel for
+  #pragma omp parallel for
   for (long i = 0; i < (N+2)*(N+2); i++) u[i] = 0.0;
-	
-  printf("=============================================================\n");
-  for (long i = 0; i <=N+1; i++) {
-	for (long j = 0; j <=N+1; j++) {
-		k = i * (N + 2) + j;
-		printf("%d  ", u[k]);
-	}
-	printf("\n");
-  }
-  printf("=============================================================\n");
+
+  for (long i = 0; i < (N+2)*(N+2); i++) printf("%d  ", u[k]);
+  printf("\n");	
+//   printf("=============================================================\n");
+//   for (long i = 0; i <=N+1; i++) {
+// 	for (long j = 0; j <=N+1; j++) {
+// 		k = i * (N + 2) + j;
+// 		printf("%d  ", u[k]);
+// 	}
+// 	printf("\n");
+//   }
+//   printf("=============================================================\n");
 
   double Res = residual(N , u);
   double res = 0.0;
