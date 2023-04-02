@@ -1,59 +1,44 @@
+#include <algorithm>
 #include <stdio.h>
-#include "utils.h"
+#include <math.h>
 #include <cmath>
 
+#if defined(_OPENMP)
+#include <omp.h>
+#endif
 
+// Given that we are using f = 1, so I ingore the term f, just replace it with 1.
 void Jacobi( long N, double *u) {
-  double h = 1.0/N;
-  double *uu = (double*) malloc(N * sizeof(double)); // N 
-  
-  for (int i = 0; i < N; i++) {
+  double h = 1.0/(N+1);
+  double *uu = (double*) malloc((N+2)*(N+2) * sizeof(double)); // N^2 
 	
-	if (i == 0){ 
-	double U = u[i+1];
-	double UU = 1.0/2 * (h*h +  U);
-	uu[i] = UU;
+  #pragma omp parallel for
+  for (int i = 0; i < (N+2)*(N+2); i++) {
+  	if (i / (N+2) == 0 || i / (N+2) == N + 1 ){
+		uu[i] = 0;	
 	}
-	else if (i == N-1){ 
-	double U = u[i-1];
-	double UU = 1.0/2 * (h*h +  U);
-	uu[i] = UU;
+	else{
+		if (i % (N+2) == 0){ 
+			uu[i] = 0;
+		}
+		else if (i % (N+2) == N+1){ 
+			uu[i] = 0;
+		}
+		else {
+			uu[i] = u[(i/(N+2)-1)*N + (i % (N+2)-1)];
+		}  
 	}
-  	else {
-	double U = u[i-1];
-	double UU = u[i+1];
-	double UUU = 1.0/2 * (h*h + U +  UU);
-	uu[i] = UUU;
-	}  
   }
 
-  for (int i = 0; i < N; i++) {
-	double U = uu[i];
+  #pragma omp parallel for
+  for (int i = 0; i < N*N; i++) {
+	double U = 1.0/4*(h*h+ uu[i-1] + uu[i+1] + uu[i - (N+2)] + uu[i+(N+2)]);
   	u[i] = U;  
   }
 
   free(uu);
 }
 
-void  Gauss_Seidel( long N, double *u) {
-  double h = 1.0/N;
-  double *uu = (double*) malloc(N * sizeof(double)); // N 
-
-
-  for (int i = 0; i < N; i++) {
-  	if (i == 0) {double U = u[i+1]; double UU = 1.0/2 * (h*h + U); uu[i]= UU;}
-	else if (i == N-1){double U = uu[i-1]; double UU = 1.0/2 * (h*h + U); uu[i] = UU; }
-	else{double U = uu[i-1]; double UU = u[i+1]; double UUU = 1.0/2 * (h*h + U + UU); uu[i] = UUU;}  
-  }
-
-  for (int i = 0; i < N; i++) {
-	double U = uu[i];
-  	u[i] = U;  
-  }
-
-
-  free(uu);
-}
 
 double residual(long N, double* u){
 	double h = 1.0/N;
