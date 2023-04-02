@@ -47,7 +47,7 @@ void Jacobi(int N, double *u) {
 	}
   }
 	
-//   printf("=============================================================\n");
+//   printf("=============================================================\n"); + U_up + U_down + U_right + U_left
 //   for (int i = 0; i <=N+1; i++) {
 // 	for (int j = 0; j <=N+1; j++) {
 // 		k = i * (N + 2) + j;
@@ -63,7 +63,7 @@ void Jacobi(int N, double *u) {
 	for (int j = 1; j <=N; j++) {
 		k = i * (N + 2) + j;
 		double U = uu[k];
-		u[k] = U;
+		u[k] = .25*(hsq );
 	}
   }
 
