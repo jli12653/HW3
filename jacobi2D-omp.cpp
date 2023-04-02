@@ -40,7 +40,7 @@ void Jacobi(int N, double *u) {
 
     //+ u[up] + u[left] + u[right] + u[down]
     //+ U_up + U_left + U_right + U_down
-		#pragma omp atomic read
+		#pragma omp atomic read u
     uu[i] = 0.25*(hsq + u[up] + u[left] + u[right] + u[down]);
 
 	}
