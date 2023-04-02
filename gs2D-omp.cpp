@@ -91,7 +91,7 @@ double residual(int N, double* u){
 
 int main(int argc, char** argv) {
   int k = 0;
-  int N = 10000;
+  int N = 1000;
 
   printf(" Iteration       Residual\n");
   
