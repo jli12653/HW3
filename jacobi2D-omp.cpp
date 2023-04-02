@@ -16,14 +16,15 @@ void Jacobi(long N, double *u) {
   #pragma omp parallel for
   for (long i = 0; i < (N+2)*(N+2); i++) {
   	if (i / (N+2) == 0 || i / (N+2) == N + 1 ){
-		uu[i] = 0;	
+		uu[i] = 0.0;	
 	}
 	else{
 		if (i % (N+2) == 0 || i % (N+2) == N+1){ 
-			uu[i] = 0;
+			uu[i] = 0.0;
 		}
 		else {
-			uu[i] = u[(i/(N+2)-1)*N + (i % (N+2)-1)];
+			double U = u[(i/(N+2)-1)*N + (i % (N+2)-1)]
+			uu[i] = U;
 		}  
 	}
   }
@@ -31,7 +32,11 @@ void Jacobi(long N, double *u) {
   #pragma omp parallel for
   for (long i = 0; i < N*N; i++) {
 	long j = (i/N+1)*(N+2) + i % N + 1;
-	double U = 1.0/4*(h*h+ uu[j-1] + uu[j+1] + uu[j - (N+2)] + uu[j+(N+2)]);
+	double U = uu[j-1];
+	double UU = uu[j+1];
+	double UUU = uu[j - (N+2)];
+	double UUUU = uu[j + (N+2)];
+	double U = 1.0/4*(h*h+ U  + UU + UUU + UUUU);
   	u[i] = U;  
   }
 
@@ -44,7 +49,6 @@ double residual(long N, double* u){
   double r, temp = 0.0;
   double *uu = (double*) malloc((N+2)*(N+2) * sizeof(double)); // (N+2)^2 
 	
-  printf("hello world\n");
 	
   // creating the entire plane of points (N+2)*(N+2)
   #pragma omp parallel for
@@ -57,19 +61,23 @@ double residual(long N, double* u){
 			uu[i] = 0;
 		}
 		else {
-			uu[i] = u[(i/(N+2)-1)*N + (i % (N+2)-1)];
+			double U = u[(i/(N+2)-1)*N + (i % (N+2)-1)]
+			uu[i] = U;
 		}  
 	}
   }
-  printf("hello world\n");
 
   #pragma omp parallel for reduction (+:r)
   for (long i = 0; i < N*N; i++) {
 	long j = (i/N+1)*(N+2) + i % N + 1;
-	temp = (4*uu[j] - uu[j-1] - uu[j+1] - uu[j - (N+2)] - uu[j+(N+2)])/h/h - 1;
+	double U = uu[j-1];
+	double UU = uu[j+1];
+	double UUU = uu[j - (N+2)];
+	double UUUU = uu[j + (N+2)];
+        double UUUUU = uu[j];
+	temp = (4*UUUUU - U - UU - UUU - UUUU)/h/h - 1;
   	r += temp * temp;  
   }
-  printf("hello world\n");
 
   free(uu);
 	
