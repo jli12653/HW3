@@ -44,6 +44,8 @@ double residual(long N, double* u){
   double r, temp = 0.0;
   double *uu = (double*) malloc((N+2)*(N+2) * sizeof(double)); // (N+2)^2 
 	
+  printf("hello world\n");
+	
   // creating the entire plane of points (N+2)*(N+2)
   #pragma omp parallel for
   for (long i = 0; i < (N+2)*(N+2); i++) {
