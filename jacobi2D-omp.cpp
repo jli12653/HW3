@@ -24,7 +24,7 @@ void Jacobi(int N, double *u) {
 	
 // #pragma omp parallel
 // {	
-
+#ifdef _OPENMP
   for (int i = 1; i <=N; i++) {
 #pragma omp parallel for
 	  for (int j = 1; j <=N; j++) {
@@ -44,18 +44,6 @@ void Jacobi(int N, double *u) {
 	}
 }
 
-	
-//   printf("=============================================================\n"); 
-//   for (int i = 0; i <=N+1; i++) {
-// 	for (int j = 0; j <=N+1; j++) {
-// 		k = i * (N + 2) + j;
-// 		printf("%d  ", uu[k]);
-// 	}
-// 	printf("\n");
-//   }
-//   printf("=============================================================\n");
-//   printf("u[0] is %d  \n", u[0]);
-
 #pragma omp parallel for
   for (int i = N+3; i <= N*N+3*N; i++){
   // for (int i = 1; i <=N; i++) {
@@ -64,8 +52,33 @@ void Jacobi(int N, double *u) {
       double U = uu[i];
       u[i] = U;
 	}
-  
+#else
+  for (int i = 1; i <=N; i++) {
+	  for (int j = 1; j <=N; j++) {
+      int k = i*(N+2) + j;
+  	
+      // double U_up = u[k + N + 2];
+      // double U_left = u[k - 1];
+      // double U_right = u[k + 1];
+      // double U_down = u[k - N - 2];
 
+    //+ u[up] + u[left] + u[right] + u[down]
+    //+ U_up + U_left + U_right + U_down
+    //u[i + N + 2] + u[i - 1] + u[i + 1] + u[i - N - 2]
+		//#pragma omp atomic read
+      uu[k] = 0.25*(hsq + u[k + N + 2] + u[k - 1] + u[k + 1] + u[k - N - 2]);
+
+	}
+}
+
+  for (int i = N+3; i <= N*N+3*N; i++){
+  // for (int i = 1; i <=N; i++) {
+  //   for (int j = 1; j <=N; j++) {
+      //k = i * (N + 2) + j;
+      double U = uu[i];
+      u[i] = U;
+	}  
+#endif
   free(uu);
 }
 
@@ -75,7 +88,7 @@ double residual(int N, double* u){
   double invhsq = 1.0/h/h;
   double r, temp = 0.0;
 	
-
+#ifdef _OPENMP
   for (int i = 1; i <=N; i++) {
 #pragma omp parallel for reduction (+:r)
     for (int j = 1; j <=N; j++) {
@@ -86,8 +99,18 @@ double residual(int N, double* u){
       r += temp * temp; 
 	}
   }
+#else
+  for (int i = 1; i <=N; i++) {
+    for (int j = 1; j <=N; j++) {
+      int k = i * (N + 2) + j;
+    
+      temp = ((4.0*u[k] - u[k + N + 2] - u[k - N -2] - u[k - 1] - u[k + 1])*invhsq - 1.0);
+      
+      r += temp * temp; 
+	}
+  }
 
-	
+#endif	
   return sqrt(r);
 }
 
