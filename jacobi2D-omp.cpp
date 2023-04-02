@@ -53,12 +53,13 @@ double residual(long N, double* u){
   double h = 1.0/(N+1);
   double invhsq = 1.0/h/h;
   double r, temp = 0.0;
-  long up, down, left, right;
+  long k, up, down, left, right;
   double U_up, U_down, U_left, U_right, U = 0.0;
 
   #pragma omp parallel for reduction (+:r)
   for (long i = 1; i <=N; i++) {
 	for (long j = 1; j <=N; j++) {
+		k = i * (N + 2) + j;
 		up = i + N;
 		down = i - N;
 		left = i - 1;
