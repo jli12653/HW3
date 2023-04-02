@@ -43,11 +43,11 @@ void Jacobi(int N, double *u) {
 	
 		double U_down = u[down];
 		
-        	uu[k] = 0.25*(hsq );
+        	uu[k] = 0.25*(hsq + U_up + U_down + U_right + U_left);
 	}
   }
 	
-//   printf("=============================================================\n"); + U_up + U_down + U_right + U_left
+//   printf("=============================================================\n"); 
 //   for (int i = 0; i <=N+1; i++) {
 // 	for (int j = 0; j <=N+1; j++) {
 // 		k = i * (N + 2) + j;
@@ -63,7 +63,7 @@ void Jacobi(int N, double *u) {
 	for (int j = 1; j <=N; j++) {
 		k = i * (N + 2) + j;
 		double U = uu[k];
-		u[k] = .25*(hsq );
+		u[k] = U;
 	}
   }
 
@@ -80,6 +80,7 @@ double residual(int N, double* u){
 
 	
   #pragma omp parallel for reduction (+:r)
+  printf("invhsq %f\n", invhsq);
   for (int i = 1; i <=N; i++) {
 	for (int j = 1; j <=N; j++) {
 		k = i * (N + 2) + j;
