@@ -112,8 +112,7 @@ int main(int argc, char** argv) {
  
 
   // Initialize u
-#pragma omp parallel for
-  for (long i = 0; i < (N+2)*(N+2); i++){ double z = 0.0; u[i] = z;}
+  //for (long i = 0; i < (N+2)*(N+2); i++){ double z = 0.0; u[i] = z;}
 
 //   for (long i = 0; i < (N+2)*(N+2); i++) printf("%d  ", u[k]);
 //   printf("\n");
