@@ -75,7 +75,7 @@ double residual(long N, double* u){
 int main(int argc, char** argv) {
   const long N = 100000;
 
-  //printf(" Iteration       Residual\n");
+  printf(" Iteration       Residual\n");
   
     
   double* u = (double*) malloc(N * sizeof(double)); // N
@@ -100,6 +100,7 @@ int main(int argc, char** argv) {
   }
 
   double tt = omp_get_wtime();
+  iter = 0;
   while (iter<100) {
     	Jacobi(N, u);
     	iter++;
