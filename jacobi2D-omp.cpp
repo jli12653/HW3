@@ -19,23 +19,23 @@ void Jacobi(long N, double *u) {
   	up = i + N;
 	down = i - N;
 	left = i % N - 1;
-	rigth = i % N + 1;
+	right = i % N + 1;
 	
-	double U_up, U_down, U_left, U_right = 0.0
+	double U_up, U_down, U_left, U_right = 0.0;
 	
 	if (up >= N^2) U_up = 0;
-	else U_up = u[up]
+	else U_up = u[up];
 		
 	if (left < 0) U_left = 0;
-	else U_left = u[i-1]
+	else U_left = u[i-1];
 	
 	if (right >= N) U_right = 0;
-	else U_right = u[i+1]
+	else U_right = u[i+1];
 	
 	if (down < 0) U_down = 0;
-	else U_down = u[down]
+	else U_down = u[down];
 		
-        uu[i] = 1.0/4*(h*h + U_up + U_down + U_right + U_left)
+        uu[i] = 1.0/4*(h*h + U_up + U_down + U_right + U_left);
   }
 
   #pragma omp parallel for
@@ -59,21 +59,21 @@ double residual(long N, double* u){
 	up = i + N;
 	down = i - N;
 	left = i % N - 1;
-	rigth = i % N + 1;
+	right = i % N + 1;
 	  
 	U = u[i];
 	
 	if (up >= N^2) U_up = 0;
-	else U_up = u[up]
+	else U_up = u[up];
 		
 	if (left < 0) U_left = 0;
-	else U_left = u[i-1]
+	else U_left = u[i-1];
 	
 	if (right >= N) U_right = 0;
-	else U_right = u[i+1]
+	else U_right = u[i+1];
 	
 	if (down < 0) U_down = 0;
-	else U_down = u[down]
+	else U_down = u[down];
 	
 	temp = (4.0*U - U_up - U_down - U_left - U_right)/h/h - 1.0;
   	r += temp * temp;  
