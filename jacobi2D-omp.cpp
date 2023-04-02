@@ -24,7 +24,7 @@ void Jacobi(int N, double *u) {
 	
 // #pragma omp parallel
 // {	
-#pragma omp parallel for schedule(static, 2*N)
+#pragma omp parallel for 
   for (int i = 1; i <=N; i++) {
 
 	  for (int j = 1; j <=N; j++) {
