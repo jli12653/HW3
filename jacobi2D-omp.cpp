@@ -60,7 +60,7 @@ void Jacobi(int N, double *u) {
 //   printf("=============================================================\n");
 //   printf("u[0] is %d  \n", u[0]);
 
-//#pragma omp parallel for
+#pragma omp parallel for
   for (int i = 1; i <=N; i++) {
 	for (int j = 1; j <=N; j++) {
 		k = i * (N + 2) + j;
@@ -79,7 +79,7 @@ double residual(int N, double* u){
   double r, temp = 0.0;
   int k, up, down, left, right;
 	
-//#pragma omp parallel for reduction (+:r)
+#pragma omp parallel for reduction (+:r)
   for (int i = 1; i <=N; i++) {
 	for (int j = 1; j <=N; j++) {
 		k = i * (N + 2) + j;
