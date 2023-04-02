@@ -149,14 +149,24 @@ int main(int argc, char** argv) {
   	}
   	printf("=============================================================\n");  	
 	
-  double tt = omp_get_wtime();
+#ifdef _OPENMP
+  double t = omp_get_wtime();
+#else
+  Timer tt;
+  tt.tic();
+#endif
+
   iter = 0;
   while (iter<100) {
     	Jacobi(N, u);
     	iter++;
   }
-  double time = omp_get_wtime() - tt;
-  printf("Time: %10f\n", time);
+#ifdef _OPENMP
+  t = omp_get_wtime() - t;
+#else
+  double t = tt.toc();
+#endif
+  printf("Time: %10f\n", t);
 
   free(u);
 
