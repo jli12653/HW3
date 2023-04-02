@@ -136,14 +136,14 @@ int main(int argc, char** argv) {
   
   printf("%10d %10f\n", iter, Res);
 
-  while (iter<5000 && Rr > 1e4){
+  while (iter<5000 && Rr < 1e4){
    	Jacobi(N, u);
 	  
 	
    	res = residual(N,u);
    	Rr = Res/res;
    	iter++;
-        printf("%10d %10f\n", iter, res);
+        printf("%10d %10f %10f\n", iter, res, Rr);
   }
 
   	printf("=============================================================\n");
