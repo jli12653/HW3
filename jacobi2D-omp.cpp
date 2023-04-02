@@ -46,6 +46,18 @@ void Jacobi(long N, double *u) {
         	uu[k] = 1.0/4*(hsq + U_up + U_down + U_right + U_left);
 	}
   }
+	
+  printf("u[0] is %d  \n", u[0]);
+  printf("=============================================================\n");
+  for (long i = 0; i <=N+1; i++) {
+	for (long j = 0; j <=N+1; j++) {
+		k = i * (N + 2) + j;
+		printf("%d  ", uu[k]);
+	}
+	printf("\n");
+  }
+  printf("=============================================================\n");
+  printf("u[0] is %d  \n", u[0]);
 
   #pragma omp parallel for
   for (long i = 1; i <=N; i++) {
