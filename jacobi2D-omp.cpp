@@ -15,6 +15,13 @@ void Jacobi(long N, double *u) {
   long k, up, down, left, right;
 	
   #pragma omp parallel for
+  for (long i = 0; i < N+2; i++) {
+  	uu[i] = uu[(N+2)*(N+1)+i] = 0.0;
+	uu[i*(N+2)] = uu[i*(N+2) + N+1] =0.0;
+  }
+
+	
+  #pragma omp parallel for
   for (long i = 1; i <=N; i++) {
 	for (long j = 1; j <=N; j++) {
 		k = i * (N + 2) + j;
@@ -100,7 +107,9 @@ int main(int argc, char** argv) {
  
 
   // Initialize u
+  #pragma omp parallel for
   for (long i = 0; i < (N+2)*(N+2); i++) u[i] = 0.0;
+
   printf("sdafsdfasdfsdfdfaasdfdasfasdfadsfsd\n");
   double Res = residual(N , u);
   printf("sdafsdfasdfsdfdfaasdfdasfasdfadsfsd\n");
