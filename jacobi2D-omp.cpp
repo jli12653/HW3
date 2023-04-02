@@ -1,3 +1,8 @@
+// g++ -fopenmp jacobi2D-omp.cpp && ./a.out
+// g++ -O3 jacobi2D-omp.cpp && ./a.out
+
+
+
 #include <algorithm>
 #include <stdlib.h>
 #include <stdio.h>
