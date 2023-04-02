@@ -36,8 +36,8 @@ void Jacobi(long N, double *u) {
 	double UU = uu[j+1];
 	double UUU = uu[j - (N+2)];
 	double UUUU = uu[j + (N+2)];
-	double U = 1.0/4*(h*h+ U  + UU + UUU + UUUU);
-  	u[i] = U;  
+	double NewU = 1.0/4*(h*h+ U  + UU + UUU + UUUU);
+  	u[i] = NewU;  
   }
 
   free(uu);
