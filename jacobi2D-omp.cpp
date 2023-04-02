@@ -127,15 +127,6 @@ int main(int argc, char** argv) {
     printf("%10d %10f\n", iter, res);
   }
 
-  	printf("=============================================================\n");
-  	for (int i = 0; i <=N+1; i++) {
-		for (int j = 0; j <=N+1; j++) {
-			k = i * (N + 2) + j;
-			printf("%f  ", u[k]);
-	}
-		printf("\n");
-  	}
-  	printf("=============================================================\n");  	
 	
 #ifdef _OPENMP
   double t = omp_get_wtime();
