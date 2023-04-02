@@ -22,7 +22,7 @@ void Jacobi(int N, double *u) {
 // 	uu[i*(N+2)] = uu[i*(N+2) + N+1] =0.0;
 //   }
   	
-  #pragma omp parallel for
+#pragma omp parallel for
   for (int i = 1; i <=N; i++) {
 	for (int j = 1; j <=N; j++) {
 		k = i * (N + 2) + j;
@@ -58,7 +58,7 @@ void Jacobi(int N, double *u) {
 //   printf("=============================================================\n");
 //   printf("u[0] is %d  \n", u[0]);
 
-  #pragma omp parallel for
+#pragma omp parallel for
   for (int i = 1; i <=N; i++) {
 	for (int j = 1; j <=N; j++) {
 		k = i * (N + 2) + j;
