@@ -23,8 +23,8 @@ void Jacobi(long N, double *u) {
 			uu[i] = 0.0;
 		}
 		else {
-			double U = u[(i/(N+2)-1)*N + (i % (N+2)-1)]
-			uu[i] = U;
+			double temp = u[(i/(N+2)-1)*N + (i % (N+2)-1)];
+			uu[i] = temp;
 		}  
 	}
   }
@@ -61,8 +61,8 @@ double residual(long N, double* u){
 			uu[i] = 0;
 		}
 		else {
-			double U = u[(i/(N+2)-1)*N + (i % (N+2)-1)]
-			uu[i] = U;
+			double A = u[(i/(N+2)-1)*N + (i % (N+2)-1)];
+			uu[i] = A;
 		}  
 	}
   }
