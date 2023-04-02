@@ -24,8 +24,8 @@ void Jacobi(long N, double *u) {
   for (long i = 1; i <=N; i++) {
 	for (long j = 1; j <=N; j++) {
 		k = i * (N + 2) + j;
-  		up = k + N;
-		down = k - N;
+  		up = k + N + 2;
+		down = k - N - 2;
 		left = k - 1;
 		right = k + 1;
 	
@@ -71,8 +71,8 @@ double residual(long N, double* u){
   for (long i = 1; i <=N; i++) {
 	for (long j = 1; j <=N; j++) {
 		k = i * (N + 2) + j;
-		up = k + N;
-		down = k - N;
+		up = k + N + 2;
+		down = k - N -2;
 		left = k - 1;
 		right = k + 1;
 	  
