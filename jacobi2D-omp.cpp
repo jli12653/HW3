@@ -79,6 +79,8 @@ double residual(int N, double* u){
   int k, up, down, left, right;
   double U_up, U_down, U_left, U_right, U;
 
+	printf("re    hsq is %d  \n", hsq);
+	
   #pragma omp parallel for reduction (+:r)
   for (int i = 1; i <=N; i++) {
 	for (int j = 1; j <=N; j++) {
