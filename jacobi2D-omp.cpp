@@ -129,7 +129,7 @@ int main(int argc, char** argv) {
 //   printf("=============================================================\n");
 	
   double Res = residual(N , u);
-  double res = 0.0;
+  double res = Res;
   double Rr = 0.0;
   int iter = 0;
   
