@@ -1,7 +1,9 @@
 #include <algorithm>
+#include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 #include <cmath>
+#include <string.h>
 
 #if defined(_OPENMP)
 #include <omp.h>
