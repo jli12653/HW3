@@ -127,7 +127,8 @@ int main(int argc, char** argv) {
 	printf("\n");
   }
   printf("=============================================================\n");
-
+  printf("u[0] is %d  \n", u[0]);
+	
   double Res = residual(N , u);
   double res = 0.0;
   double Rr = 0.0;
