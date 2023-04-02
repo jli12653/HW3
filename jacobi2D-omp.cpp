@@ -68,7 +68,7 @@ double residual(long N, double* u){
 	}
   }
 	
-  printf("creation is done\n")
+  printf("creation is done\n");
 
   #pragma omp parallel for reduction (+:r)
   for (long i = 0; i < N*N; i++) {
