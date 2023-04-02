@@ -24,12 +24,12 @@ void Jacobi(int N, double *u) {
 	
 // #pragma omp parallel
 // {	
-//#pragma omp parallel for
+#pragma omp parallel for
   for (int i = N+3; i <= N*N+3*N; i++){
-  		int up = i + N + 2;
-		  int down = i - N - 2;
-		  int left = i - 1;
-		  int right = i + 1;
+  	int up = i + N + 2;
+		int down = i - N - 2;
+		int left = i - 1;
+		int right = i + 1;
 	
 
 		double U_up = u[up];
