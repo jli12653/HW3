@@ -77,7 +77,7 @@ double residual(long N, double* u){
 	
 	
 	temp = (4.0*U - U_up - U_down - U_left - U_right)/h/h - 1.0;
-	printf("%d",temp);
+	printf("%d = %d",i,temp);
 	  
   	r += temp * temp;  
   }
