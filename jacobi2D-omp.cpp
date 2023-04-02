@@ -55,16 +55,6 @@ void Jacobi(long N, double *u) {
 		u[k] = U;
 	}
   }
-  
-  printf("=============================================================\n");
-  for (long i = 0; i <=N+1; i++) {
-	for (long j = 0; j <=N+1; j++) {
-		k = i * (N + 2) + j;
-		printf("%d", u[k]);
-	}
-	printf("\n");
-  }
-  printf("=============================================================\n");
 
   free(uu);
 }
@@ -123,6 +113,16 @@ int main(int argc, char** argv) {
   // Initialize u
   #pragma omp parallel for
   for (long i = 0; i < (N+2)*(N+2); i++) u[i] = 0.0;
+	
+  printf("=============================================================\n");
+  for (long i = 0; i <=N+1; i++) {
+	for (long j = 0; j <=N+1; j++) {
+		k = i * (N + 2) + j;
+		printf("%d", u[k]);
+	}
+	printf("\n");
+  }
+  printf("=============================================================\n");
 
   double Res = residual(N , u);
   double res = 0.0;
@@ -134,6 +134,18 @@ int main(int argc, char** argv) {
 
   while (iter<10 && Rr <= 1e4){
    	Jacobi(N, u);
+	  
+	printf("=============================================================\n");
+  	for (long i = 0; i <=N+1; i++) {
+		for (long j = 0; j <=N+1; j++) {
+			k = i * (N + 2) + j;
+			printf("%d", u[k]);
+	}
+		printf("\n");
+  	}
+  	printf("=============================================================\n");  
+	  
+	
    	res = residual(N,u);
    	Rr = Res/res;
    	iter++;
