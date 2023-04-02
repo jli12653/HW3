@@ -1,5 +1,5 @@
 // g++ -fopenmp jacobi2D-omp.cpp && ./a.out
-// g++ -O3 jacobi2D-omp.cpp && ./a.out
+// g++ -std=c++11 -O3 jacobi2D-omp.cpp && ./a.out
 
 
 
