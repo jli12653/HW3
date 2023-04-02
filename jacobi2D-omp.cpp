@@ -32,7 +32,6 @@ void Jacobi(int N, double *u) {
 		  left = i - 1;
 		  right = i + 1;
 	
-#pragma omp critical
 
 		double U_up = u[up];
 		
