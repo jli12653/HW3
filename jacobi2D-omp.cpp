@@ -130,18 +130,16 @@ int main(int argc, char** argv) {
 	
   double Res = residual(N , u);
   double res = Res;
-  double Rr = 0.0;
   int iter = 0;
   
   
   printf("%10d %10f\n", iter, Res);
 
-  while (iter<5000 && Rr < 1e4){
+  while (iter<5000 && Res/res < 1e4){
    	Jacobi(N, u);
 	  
 	
    	res = residual(N,u);
-   	Rr = Res/res;
    	iter++;
     printf("%10d %10f %10f\n", iter, res, Rr);
   }
