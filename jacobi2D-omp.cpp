@@ -10,21 +10,21 @@
 #endif
 
 // Given that we are using f = 1, so I ingore the term f, just replace it with 1.
-void Jacobi(long N, double *u) {
+void Jacobi(int N, double *u) {
   double h = 1.0 / ( N + 1.0 );
   double hsq = h*h;
   double *uu = (double*) malloc( (N+2)*(N+2) * sizeof(double)); // (N+2)^2 
-  long k, up, down, left, right;
+  int k, up, down, left, right;
 	
 //   #pragma omp parallel for
-//   for (long i = 0; i < N+2; i++) {
+//   for (int i = 0; i < N+2; i++) {
 //   	uu[i] = uu[(N+2)*(N+1)+i] = 0.0;
 // 	uu[i*(N+2)] = uu[i*(N+2) + N+1] =0.0;
 //   }
   	
   #pragma omp parallel for
-  for (long i = 1; i <=N; i++) {
-	for (long j = 1; j <=N; j++) {
+  for (int i = 1; i <=N; i++) {
+	for (int j = 1; j <=N; j++) {
 		k = i * (N + 2) + j;
   		up = k + N + 2;
 		down = k - N - 2;
@@ -49,8 +49,8 @@ void Jacobi(long N, double *u) {
 	
    printf("hsq is %d  \n", hsq);
 //   printf("=============================================================\n");
-//   for (long i = 0; i <=N+1; i++) {
-// 	for (long j = 0; j <=N+1; j++) {
+//   for (int i = 0; i <=N+1; i++) {
+// 	for (int j = 0; j <=N+1; j++) {
 // 		k = i * (N + 2) + j;
 // 		printf("%d  ", uu[k]);
 // 	}
@@ -60,8 +60,8 @@ void Jacobi(long N, double *u) {
 //   printf("u[0] is %d  \n", u[0]);
 
   #pragma omp parallel for
-  for (long i = 1; i <=N; i++) {
-	for (long j = 1; j <=N; j++) {
+  for (int i = 1; i <=N; i++) {
+	for (int j = 1; j <=N; j++) {
 		k = i * (N + 2) + j;
 		double U = uu[k];
 		u[k] = U;
@@ -72,16 +72,16 @@ void Jacobi(long N, double *u) {
 }
 
 
-double residual(long N, double* u){
+double residual(int N, double* u){
   double h = 1.0/(N+1);
   double invhsq = 1.0/h/h;
   double r, temp = 0.0;
-  long k, up, down, left, right;
+  int k, up, down, left, right;
   double U_up, U_down, U_left, U_right, U;
 
   #pragma omp parallel for reduction (+:r)
-  for (long i = 1; i <=N; i++) {
-	for (long j = 1; j <=N; j++) {
+  for (int i = 1; i <=N; i++) {
+	for (int j = 1; j <=N; j++) {
 		k = i * (N + 2) + j;
 		up = k + N + 2;
 		down = k - N -2;
@@ -114,8 +114,8 @@ double residual(long N, double* u){
 }
 
 int main(int argc, char** argv) {
-  long k = 0;
-  const long N = 4;
+  int k = 0;
+  int N = 4;
 
   printf(" Iteration       Residual\n");
   
@@ -124,14 +124,14 @@ int main(int argc, char** argv) {
  
 
   // Initialize u
-  for (long i = 0; i < (N+2)*(N+2); i++){ double z = 0.0; u[i] = z;}
+  for (int i = 0; i < (N+2)*(N+2); i++){ double z = 0.0; u[i] = z;}
 
-//   for (long i = 0; i < (N+2)*(N+2); i++) printf("%d  ", u[k]);
+//   for (int i = 0; i < (N+2)*(N+2); i++) printf("%d  ", u[k]);
 //   printf("\n");
   printf("u[0] is %d  \n", u[0]);
   printf("=============================================================\n");
-  for (long i = 0; i <=N+1; i++) {
-	for (long j = 0; j <=N+1; j++) {
+  for (int i = 0; i <=N+1; i++) {
+	for (int j = 0; j <=N+1; j++) {
 		k = i * (N + 2) + j;
 		printf("%d  ", u[k]);
 	}
@@ -152,8 +152,8 @@ int main(int argc, char** argv) {
    	Jacobi(N, u);
 	  
 	printf("=============================================================\n");
-  	for (long i = 0; i <=N+1; i++) {
-		for (long j = 0; j <=N+1; j++) {
+  	for (int i = 0; i <=N+1; i++) {
+		for (int j = 0; j <=N+1; j++) {
 			k = i * (N + 2) + j;
 			printf("%d  ", u[k]);
 	}
