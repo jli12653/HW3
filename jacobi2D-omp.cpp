@@ -55,7 +55,8 @@ void Jacobi(long N, double *u) {
 		u[k] = U;
 	}
   }
-
+  
+  printf("=============================================================\n");
   for (long i = 0; i <=N+1; i++) {
 	for (long j = 0; j <=N+1; j++) {
 		k = i * (N + 2) + j;
@@ -63,7 +64,7 @@ void Jacobi(long N, double *u) {
 	}
 	printf("\n");
   }
-
+  printf("=============================================================\n");
 
   free(uu);
 }
