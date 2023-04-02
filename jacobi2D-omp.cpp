@@ -20,7 +20,6 @@
 void Jacobi(int N, double *u) {
   double h = 1.0 / ( N + 1 );
   double hsq = h*h;
-  double *uu = (double*) malloc( (N+2)*(N+2) * sizeof(double)); // (N+2)^2 
 	
 // #pragma omp parallel
 // {	
@@ -28,35 +27,47 @@ void Jacobi(int N, double *u) {
   for (int i = 1; i <=N; i++) {
 
 	  for (int j = 1; j <=N; j++) {
-      int k = i*(N+2) + j;
-  	
-      // double U_up = u[k + N + 2];
-      // double U_left = u[k - 1];
-      // double U_right = u[k + 1];
-      // double U_down = u[k - N - 2];
+      if (i % 2 == 1){
+        if (j % 2 == 1){
+          int k = i*(N+2) + j;
+          double U = 0.25*(hsq + u[k + N + 2] + u[k - 1] + u[k + 1] + u[k - N - 2]);\
+          u[k] = U;
+        }
+      }
+      else{
+          if (j % 2 == 0){
+          int k = i*(N+2) + j;
+          double U = 0.25*(hsq + u[k + N + 2] + u[k - 1] + u[k + 1] + u[k - N - 2]);\
+          u[k] = U;
+        }
+      }
+    }
+}
 
-    //+ u[up] + u[left] + u[right] + u[down]
-    //+ U_up + U_left + U_right + U_down
-    //u[i + N + 2] + u[i - 1] + u[i + 1] + u[i - N - 2]
-		
-      uu[k] = 0.25*(hsq + u[k + N + 2] + u[k - 1] + u[k + 1] + u[k - N - 2]);
 
+#pragma omp parallel for
+  for (int i = 1; i <=N; i++) {
+
+	  for (int j = 1; j <=N; j++) {
+		  if (i % 2 == 1){
+        if (j % 2 == 0){
+          int k = i*(N+2) + j;
+          double U = 0.25*(hsq + u[k + N + 2] + u[k - 1] + u[k + 1] + u[k - N - 2]);\
+          u[k] = U;
+        }
+      }
+      else{
+          if (j % 2 == 1){
+          int k = i*(N+2) + j;
+          double U = 0.25*(hsq + u[k + N + 2] + u[k - 1] + u[k + 1] + u[k - N - 2]);\
+          u[k] = U;
+        }
+      }
 	}
 }
 
 	
 
-#pragma omp parallel for
-  for (int i = 1; i <=N; i++) {
-	  for (int j = 1; j <=N; j++) {
-      int k = i*(N+2) + j;
-      double U = uu[k];
-      u[k] = U;
-	}  
-  }
-  
-
-  free(uu);
 }
 
 
