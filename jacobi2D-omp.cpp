@@ -95,7 +95,7 @@ int main(int argc, char** argv) {
  
 
   // Initialize u
-  for (long i = 0; i < N; i++) u[i] = 0.0;
+  for (long i = 0; i < N*N; i++) u[i] = 0.0;
   double Res = residual(N , u);
   double res = 0.0;
   double Rr = 0.0;
