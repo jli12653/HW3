@@ -77,10 +77,9 @@ double residual(int N, double* u){
   double r, temp = 0.0;
   int k, up, down, left, right;
   double U_up, U_down, U_left, U_right, U;
-
-	
-  #pragma omp parallel for reduction (+:r)
   printf("invhsq %f\n", invhsq);
+	
+#pragma omp parallel for reduction (+:r)
   for (int i = 1; i <=N; i++) {
 	for (int j = 1; j <=N; j++) {
 		k = i * (N + 2) + j;
