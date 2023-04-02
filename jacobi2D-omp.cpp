@@ -148,16 +148,6 @@ int main(int argc, char** argv) {
   while (iter<5000 && Rr <= 1e4){
    	Jacobi(N, u);
 	  
-// 	printf("=============================================================\n");
-//   	for (int i = 0; i <=N+1; i++) {
-// 		for (int j = 0; j <=N+1; j++) {
-// 			k = i * (N + 2) + j;
-// 			printf("%f  ", u[k]);
-// 	}
-// 		printf("\n");
-//   	}
-//   	printf("=============================================================\n");  
-	  
 	
    	res = residual(N,u);
    	Rr = Res/res;
@@ -165,6 +155,16 @@ int main(int argc, char** argv) {
         printf("%10d %10f\n", iter, res);
   }
 
+  	printf("=============================================================\n");
+  	for (int i = 0; i <=N+1; i++) {
+		for (int j = 0; j <=N+1; j++) {
+			k = i * (N + 2) + j;
+			printf("%f  ", u[k]);
+	}
+		printf("\n");
+  	}
+  	printf("=============================================================\n");  	
+	
   double tt = omp_get_wtime();
   iter = 0;
   while (iter<100) {
