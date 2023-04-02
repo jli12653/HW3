@@ -49,7 +49,6 @@ double residual(long N, double* u){
   // creating the entire plane of points (N+2)*(N+2)
   #pragma omp parallel for
   for (long i = 0; i < (N+2)*(N+2); i++) {
-	printf("hello world\n");
   	if (i / (N+2) == 0 || i / (N+2) == N + 1 ){
 		uu[i] = 0;	
 	}
