@@ -11,10 +11,9 @@
 void Jacobi(long N, double *u) {
   double h = 1.0/(N+1);
   double hsq = h*h;
-  double *uu = (double*) malloc(N*N * sizeof(double)); // (N+2)^2 
+  double *uu = (double*) malloc((N+2)*(N+2) * sizeof(double)); // (N+2)^2 
   long k, up, down, left, right;
 	
-  // creating the entire plane of points (N+2)*(N+2)
   #pragma omp parallel for
   for (long i = 1; i <=N; i++) {
 	for (long j = 1; j <=N; j++) {
