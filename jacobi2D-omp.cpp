@@ -102,6 +102,7 @@ double residual(long N, double* u){
 }
 
 int main(int argc, char** argv) {
+  long k = 0;
   const long N = 4;
 
   printf(" Iteration       Residual\n");
