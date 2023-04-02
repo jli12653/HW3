@@ -65,7 +65,7 @@ double residual(int N, double* u){
   double invhsq = 1.0/h/h;
   double r, temp = 0.0;
 	
-
+#pragma omp parallel for
   for (int i = 1; i <=N; i++) {
 #pragma omp parallel for reduction (+:r)
     for (int j = 1; j <=N; j++) {
@@ -83,7 +83,7 @@ double residual(int N, double* u){
 
 int main(int argc, char** argv) {
   int k = 0;
-  int N = 10000;
+  int N = 10;
 
   printf(" Iteration       Residual\n");
   
