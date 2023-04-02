@@ -11,7 +11,7 @@
 void Jacobi(long N, double *u) {
   double h = 1.0/(N+1);
   double hsq = h*h;
-  double *uu = (double*) malloc((N+2)*(N+2) * sizeof(double)); // (N+2)^2 
+  double *uu = (double*) malloc( (N+2)*(N+2) * sizeof(double)); // (N+2)^2 
   long k, up, down, left, right;
 	
 //   #pragma omp parallel for
@@ -19,10 +19,7 @@ void Jacobi(long N, double *u) {
 //   	uu[i] = uu[(N+2)*(N+1)+i] = 0.0;
 // 	uu[i*(N+2)] = uu[i*(N+2) + N+1] =0.0;
 //   }
-  
-  #pragma omp parallel for
-  for (long i = 0; i < (N+2)*(N+2); i++) uu[i] = 0.0;
-	
+  	
   #pragma omp parallel for
   for (long i = 1; i <=N; i++) {
 	for (long j = 1; j <=N; j++) {
@@ -50,9 +47,14 @@ void Jacobi(long N, double *u) {
 	}
   }
 
-  double* utemp = u;
-  u = uu;
-  uu = utemp;
+  #pragma omp parallel for
+  for (long i = 1; i <=N; i++) {
+	for (long j = 1; j <=N; j++) {
+		k = i * (N + 2) + j;
+		double U = uu[k];
+		u[k] = U;
+	}
+  }
 
   free(uu);
 }
@@ -112,9 +114,7 @@ int main(int argc, char** argv) {
   #pragma omp parallel for
   for (long i = 0; i < (N+2)*(N+2); i++) u[i] = 0.0;
 
-  printf("sdafsdfasdfsdfdfaasdfdasfasdfadsfsd\n");
   double Res = residual(N , u);
-  printf("sdafsdfasdfsdfdfaasdfdasfasdfadsfsd\n");
   double res = 0.0;
   double Rr = 0.0;
   int iter = 0;
