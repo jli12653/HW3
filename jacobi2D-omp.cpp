@@ -116,16 +116,16 @@ int main(int argc, char** argv) {
   int iter = 0;
   
   
-  printf("%10d %10f\n", iter, Res);
+  // printf("%10d %10f\n", iter, Res);
 
-  while (iter<5000 && Res/res < 1e4){
-   	Jacobi(N, u);
+  // while (iter<5000 && Res/res < 1e4){
+  //  	Jacobi(N, u);
 	  
 	
-   	res = residual(N,u);
-   	iter++;
-    printf("%10d %10f\n", iter, res);
-  }
+  //  	res = residual(N,u);
+  //  	iter++;
+  //   printf("%10d %10f\n", iter, res);
+  // }
 
 	
 #ifdef _OPENMP
