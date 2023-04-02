@@ -61,6 +61,7 @@ double residual(long N, double* u){
 		}  
 	}
   }
+  printf("hello world\n");
 
   #pragma omp parallel for reduction (+:r)
   for (long i = 0; i < N*N; i++) {
@@ -68,6 +69,7 @@ double residual(long N, double* u){
 	temp = (4*uu[j] - uu[j-1] - uu[j+1] - uu[j - (N+2)] - uu[j+(N+2)])/h/h - 1;
   	r += temp * temp;  
   }
+  printf("hello world\n");
 
   free(uu);
 	
