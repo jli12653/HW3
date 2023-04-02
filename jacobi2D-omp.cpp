@@ -60,12 +60,12 @@ double residual(long N, double* u){
   for (long i = 1; i <=N; i++) {
 	for (long j = 1; j <=N; j++) {
 		k = i * (N + 2) + j;
-		up = i + N;
-		down = i - N;
-		left = i - 1;
-		right = i + 1;
+		up = k + N;
+		down = k - N;
+		left = k - 1;
+		right = k + 1;
 	  
-		U = u[i];
+		U = u[k];
 	
 	
 	 	U_up = u[up];
