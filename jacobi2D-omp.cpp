@@ -26,10 +26,10 @@ void Jacobi(int N, double *u) {
 // {	
 #pragma omp parallel for
   for (int i = N+3; i <= N*N+3*N; i++){
-  		int up = i + N + 2;
-		  int down = i - N - 2;
-		  int left = i - 1;
-		  int right = i + 1;
+  		// int up = i + N + 2;
+		  // int down = i - N - 2;
+		  // int left = i - 1;
+		  // int right = i + 1;
 	
 
 		// double U_up = u[up];
@@ -40,7 +40,7 @@ void Jacobi(int N, double *u) {
     //+ u[up] + u[left] + u[right] + u[down]
     //+ U_up + U_left + U_right + U_down
 		//#pragma omp atomic read
-    uu[i] = 0.25*(hsq + u[up] + u[left] + u[right] + u[down]);
+    uu[i] = 0.25*(hsq + u[i + N + 2] + u[i - 1] + u[i + 1] + u[i - N - 2]);
 
 	}
 //}
