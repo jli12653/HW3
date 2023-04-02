@@ -58,7 +58,8 @@ void Jacobi(long N, double *u) {
 
   for (long i = 0; i <=N+1; i++) {
 	for (long j = 0; j <=N+1; j++) {
-		printf("%d", u[i]);
+		k = i * (N + 2) + j;
+		printf("%d", u[k]);
 	}
 	printf("\n");
   }
@@ -110,7 +111,7 @@ double residual(long N, double* u){
 }
 
 int main(int argc, char** argv) {
-  const long N = 10;
+  const long N = 4;
 
   printf(" Iteration       Residual\n");
   
