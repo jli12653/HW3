@@ -102,12 +102,6 @@ int main(int argc, char** argv) {
   // Initialize u
   for (int i = 0; i < (N+2)*(N+2); i++) u[i] = 0.0;
   
-//   for (int i = 1; i <=N; i++) {
-// 	for (int j = 1; j <=N; j++) {
-// 		k = i * (N + 2) + j;
-// 		u[k] = 0.5;
-// 	}
-//   }
 
 //   printf("=============================================================\n");
 //   for (int i = 0; i <=N+1; i++) {
@@ -126,14 +120,14 @@ int main(int argc, char** argv) {
   
   printf("%10d %10f\n", iter, Res);
 
-  // while (iter<5000 && Res/res < 1e4){
-  //  	gs2D(N, u);
+  while (iter<5000 && Res/res < 1e4){
+   	gs2D(N, u);
 	  
 	
-  //  	res = residual(N,u);
-  //  	iter++;
-  //   printf("%10d %10f\n", iter, res);
-  // }
+   	res = residual(N,u);
+   	iter++;
+    printf("%10d %10f\n", iter, res);
+  }
 
 	
 #ifdef _OPENMP
