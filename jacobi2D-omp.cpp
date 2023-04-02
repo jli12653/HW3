@@ -136,7 +136,7 @@ int main(int argc, char** argv) {
   
   printf("%10d %10f\n", iter, Res);
 
-  while (iter<5000 && Rr < 1e4){
+  while (iter<5000 && Rr > 1e4){
    	Jacobi(N, u);
 	  
 	
