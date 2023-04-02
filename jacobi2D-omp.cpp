@@ -100,6 +100,7 @@ int main(int argc, char** argv) {
 
   // Initialize u
   for (long i = 0; i < (N+2)*(N+2); i++) u[i] = 0.0;
+  printf("sdafsdfasdfsdfdfaasdfdasfasdfadsfsd\n");
   double Res = residual(N , u);
   printf("sdafsdfasdfsdfdfaasdfdasfasdfadsfsd\n");
   double res = 0.0;
