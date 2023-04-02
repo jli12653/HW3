@@ -21,7 +21,7 @@ void Jacobi(long N, double *u) {
 //   }
   
   #pragma omp parallel for
-  for (long i = 0; i < (N+2)*(N+2); i++) u[i] = 0.0;
+  for (long i = 0; i < (N+2)*(N+2); i++) uu[i] = 0.0;
 	
   #pragma omp parallel for
   for (long i = 1; i <=N; i++) {
