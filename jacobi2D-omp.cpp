@@ -47,7 +47,7 @@ void Jacobi(long N, double *u) {
 	}
   }
 	
-   /printf("hsq is %d  \n", hsq);
+   printf("hsq is %d  \n", hsq);
 //   printf("=============================================================\n");
 //   for (long i = 0; i <=N+1; i++) {
 // 	for (long j = 0; j <=N+1; j++) {
