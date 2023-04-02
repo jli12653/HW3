@@ -141,7 +141,7 @@ int main(int argc, char** argv) {
 	
    	res = residual(N,u);
    	iter++;
-    printf("%10d %10f %10f\n", iter, res, Rr);
+    printf("%10d %10f\n", iter, res);
   }
 
   	printf("=============================================================\n");
