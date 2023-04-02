@@ -21,16 +21,15 @@ void Jacobi(int N, double *u) {
   double h = 1.0 / ( N + 1 );
   double hsq = h*h;
   double *uu = (double*) malloc( (N+2)*(N+2) * sizeof(double)); // (N+2)^2 
-  int  up, down, left, right;
 	
 // #pragma omp parallel
 // {	
 #pragma omp parallel for
   for (int i = N+3; i <= N*N+3*N; i++){
-  		up = i + N + 2;
-		  down = i - N - 2;
-		  left = i - 1;
-		  right = i + 1;
+  		int up = i + N + 2;
+		  int down = i - N - 2;
+		  int left = i - 1;
+		  int right = i + 1;
 	
 
 		// double U_up = u[up];
