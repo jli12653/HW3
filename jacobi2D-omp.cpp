@@ -16,13 +16,8 @@ void Jacobi(int N, double *u) {
   double *uu = (double*) malloc( (N+2)*(N+2) * sizeof(double)); // (N+2)^2 
   int k, up, down, left, right;
 	
-//   #pragma omp parallel for
-//   for (int i = 0; i < N+2; i++) {
-//   	uu[i] = uu[(N+2)*(N+1)+i] = 0.0;
-// 	uu[i*(N+2)] = uu[i*(N+2) + N+1] =0.0;
-//   }
   	
-//#pragma omp parallel for
+#pragma omp parallel for
   for (int i = 1; i <=N; i++) {
 	for (int j = 1; j <=N; j++) {
 		k = i * (N + 2) + j;
@@ -58,7 +53,7 @@ void Jacobi(int N, double *u) {
 //   printf("=============================================================\n");
 //   printf("u[0] is %d  \n", u[0]);
 
-//#pragma omp parallel for
+#pragma omp parallel for
   for (int i = 1; i <=N; i++) {
 	for (int j = 1; j <=N; j++) {
 		k = i * (N + 2) + j;
