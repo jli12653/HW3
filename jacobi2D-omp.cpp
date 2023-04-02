@@ -21,8 +21,7 @@ void Jacobi(int N, double *u) {
   double h = 1.0 / ( N + 1 );
   double hsq = h*h;
 	
-// #pragma omp parallel
-// {	
+
 #pragma omp parallel for
   for (int i = 1; i <=N; i++) {
 
@@ -94,7 +93,7 @@ double residual(int N, double* u){
 
 int main(int argc, char** argv) {
   int k = 0;
-  int N = 1000;
+  int N = 10;
 
   printf(" Iteration       Residual\n");
   
@@ -129,14 +128,14 @@ int main(int argc, char** argv) {
   
   printf("%10d %10f\n", iter, Res);
 
-  // while (iter<5000 && Res/res < 1e4){
-  //  	Jacobi(N, u);
+  while (iter<5000 && Res/res < 1e4){
+   	Jacobi(N, u);
 	  
 	
-  //  	res = residual(N,u);
-  //  	iter++;
-  //   printf("%10d %10f\n", iter, res);
-  // }
+   	res = residual(N,u);
+   	iter++;
+    printf("%10d %10f\n", iter, res);
+  }
 
 	
 #ifdef _OPENMP
