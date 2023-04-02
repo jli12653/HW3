@@ -1,0 +1,968 @@
+1.
+(a)
+Given we have the following code,
+#pragma omp parallel
+{
+#pragma omp for schedule(static)
+for (i = 1; i < n; i++)
+	f(i)
+#pragma omp for schedule(static)
+for (i = 1; i < n; i++)
+	f(n-i)
+}
+
+We can see that the by assumption, it is executed by two threads, so when we hit the first for loop, which is divided into two chunks, and one thread would execute one chuck, given that static option divide the full workload of the for loop into two equal chunk, so each thread would execute same amount, namely n/2. However, given the natrue of static, the first half of loop would be assigned to thread 0, which is 1 - (n-1)/2 (assuming that n-1 is even). And total time would take is 
+1 + 2 +... + (n-1)/2
+= (1+(n-1)/2)n/2/2
+= (n^2-1)/8
+And for thread 1, the part of loop that is done by it is (n+1)/2 - (n-1). And the total time would take is,
+(n+1)/2 +... + (n-1)
+=((n+1)/2 + (n-1))((n-1)/2)/2
+=(3n-1)(n-1)/8
+=(3n^2-4n+1)/8 
+all time are in milliseconds. 
+Obviously, the thread 1 would take more time to complete. So in the execution, the thread 0 would finish first, and it takes (n^2-1)/8 milliseconds. And then would wait for
+(3n^2-4n+1)/8 - (n^2-1)/8 
+= (2n^2-4n+2)/8 milliseconds 
+until the thread 1 complete its mission.
+Then, let's see the second loop, given that the option is still static, however, this time the loop runs backwark. In this loop the thread 0 would be assigned part (n+1)/2 - (n-1), and total time taken to complete woule be (3n^2-4n+1)/8. Similarly, the thread 1 would be assigned part 1 - (n-1)/2, and take (n^2-1)/8 to complete and wait for (2n^2-4n+2)/8.     
+To conculde, each thread takes (3n^2-4n+1)/8 * 2 = (3n^2-4n+1)/4 milliseconds to execute the parallel region. And each thread takes (2n^2-4n+2)/8 milliseconds in waiting for the other thread.
+(b)
+When we use (static,1), we are define each chunk has size 1. Namely, for the first loop, we are processing alternatively. Still assuming that n-1 is even. And with (static,1), the thread 0 would take iteration 1, 3, ..., n-2, i.e. all the odd iteration. And the thread 1, would take all the even iteration. So, the total time that the thread 0 spends is,
+1 + 3 +... + n-2
+= (n-2 + 1 )((n-1)/2)/2
+= (n-1)^2/4
+= (n^2 -2n +1)/4 milliseconds
+And similarly, for the thread 1, the time it spends is
+2 + 4 +... + n-1
+= (n-1 + 2 )((n-1)/2)/2
+= (n+1)(n-1)/4
+= (n^2 - 1)/4 milliseconds
+As previous part (a), the thread 1 takes more time to complete the part assigned in first loop. And the wait time for thread 0 would be (n-1)/2 milliseconds. Similarly, in the second loop, the roles of thread 0 and thread 1 exchanged. The thread 0 would take n-1 , ..., 2. The thread 1 would take n-2,..., 1. So this time, thread 0 would spend longer time, which is (n^2 - 1)/4 milliseconds. And the thread 0 would takes (n^2 -2n +1)/4 milliseconds and wait for (n-1)/2 milliseconds. 
+To conclude, this time, the total time spent by each thread in the parallel region is (n^2 - 1)/4 * 2 = (n^2 - 1)/2 milliseconds, and each thread takes (n-1)/2 milliseconds in waiting for the other thread. 
+Compared to part (a), when n > 3, (static,1) would take less total time in parallel and less time in waiting.    
+(c)
+If we change (static,1) to (dynamic,1), let's see what has been changed. When the first loop started, 1 is still assinged to thread 0 and 2 is still assigned to thread 1. The different is 3 would assigned to the thread who complete the size-one chunk first. In this case, the thread 0 would complete frist, and 3 is assigned to thread 0. Then, thread 1 complete 2 before thread 0 complete 3, so 4 is assigned to thread 1 again. Following this process, we will find that at the end, 1, 3, ..., (n-2) is still assigned to thread 0 and 2, 4,..., n-1 is still assigned to thread 1. Same thing happens here. 
+For the second loop, thread 0 first gets n-1, and thread 1 gets n-2. However, this time, things are different, thread 1 complete first and then gets n-3. During thread 1 process n-3, thread 0 complete n-1 and get n-4. And two thread complete n-4 and n-3 at the same time. So, they consequencely get assigned. Namely, thread 0 gets n-5, and thread 1 get n-6, and same process happend again. So, at the end, theard 0 gets 1, 4, 5, 8, 9, 12,..., n-4, n-1. And the thread 1 gets 2, 3, 6, 7, 10, 11,..., n-3, n-2. We can see that adjent two term take equal sum in both squence. So this time, both thread takes same amoumt time to compute the second loop. Namly, each thread takes n(n-1)/2/2 = (n^2 - n)/4. And there is no waiting time. 
+To conclude, both thread takes (n^2 - 1)/4 + (n^2 - n)/4 = (2n^2 - n - 1)/4 milliseconds to compute, and only the thread 0 takes (n-1)/2 milliseconds in waiting for the other thread. 
+Comparing to (static,1), (dynamic,1) do have a little improvement. 
+(d)
+OpenMP directive that allows to eliminate the waiting time would be to use the clause "nowait". Then, the implict barrier is removed and the thread that finishes early proceeds straight to the next instruction and does not wait for the other threads in the team. If we remove the barrier and back to static again, the thread 0 would get 1, 2,..., (n-1)/2 for the first loop and when it complete, it will continou immidiately and get n-1, n-2,..., (n+1)/2. So the total time spending would be 
+1 + 2 +... + n-1 = n(n-1)/2
+Similarly, the thread 1 would get (n+1)/2,..., (n-1) from the first loop and (n-1)/2,..., 1 from the second loop, the total time takes would be the same as thread 0, which is n(n-1)/2. 
+To conclude, when we using nowait, each thread would takes n(n-1)/2 milliseconds to execute the parallel region, and no waiting time is needed for both thread.
+
+
+2.
+Number of threads = 4
+sequential-scan = 0.742545s
+parallel-scan   = 0.243631s
+error = 0
+
+
+Number of threads = 8
+sequential-scan = 0.773103s
+parallel-scan   = 0.177028s
+error = 0
+
+
+Number of threads = 16
+sequential-scan = 0.521394s
+parallel-scan   = 0.201570s
+error = 0
+
+Number of threads = 32
+sequential-scan = 0.602212s
+parallel-scan   = 0.185666s
+error = 0
+
+Number of threads = 64
+sequential-scan = 0.497293s
+parallel-scan   = 0.162020s
+error = 0
+
+We can see that as number of threads increase, the timings does not make a significiant difference. I was running on the cims server, the architecture is the following,
+processor       : 0
+vendor_id       : AuthenticAMD
+cpu family      : 23
+model           : 1
+model name      : AMD EPYC Processor (with IBPB)
+stepping        : 2
+microcode       : 0x1000065
+cpu MHz         : 2894.562
+cache size      : 512 KB
+physical id     : 0
+siblings        : 1
+core id         : 0
+cpu cores       : 1
+apicid          : 0
+initial apicid  : 0
+fpu             : yes
+fpu_exception   : yes
+cpuid level     : 13
+wp              : yes
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm art rep_good nopl extd_apicid eagerfpu pni pclmulqdq ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm cmp_legacy cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw topoext ssbd rsb_ctxsw ibpb vmmcall fsgsbase tsc_adjust bmi1 avx2 smep bmi2 rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 retpoline_amd virt_ssbd arat umip
+bogomips        : 5789.12
+TLB size        : 1024 4K pages
+clflush size    : 64
+cache_alignment : 64
+address sizes   : 48 bits physical, 48 bits virtual
+power management:
+
+processor       : 1
+vendor_id       : AuthenticAMD
+cpu family      : 23
+model           : 1
+model name      : AMD EPYC Processor (with IBPB)
+stepping        : 2
+microcode       : 0x1000065
+cpu MHz         : 2894.562
+cache size      : 512 KB
+physical id     : 1
+siblings        : 1
+core id         : 0
+cpu cores       : 1
+apicid          : 1
+initial apicid  : 1
+fpu             : yes
+fpu_exception   : yes
+cpuid level     : 13
+wp              : yes
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm art rep_good nopl extd_apicid eagerfpu pni pclmulqdq ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm cmp_legacy cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw topoext ssbd rsb_ctxsw ibpb vmmcall fsgsbase tsc_adjust bmi1 avx2 smep bmi2 rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 retpoline_amd virt_ssbd arat umip
+bogomips        : 5789.12
+TLB size        : 1024 4K pages
+clflush size    : 64
+cache_alignment : 64
+address sizes   : 48 bits physical, 48 bits virtual
+power management:
+
+processor       : 2
+vendor_id       : AuthenticAMD
+cpu family      : 23
+model           : 1
+model name      : AMD EPYC Processor (with IBPB)
+stepping        : 2
+microcode       : 0x1000065
+cpu MHz         : 2894.562
+cache size      : 512 KB
+physical id     : 2
+siblings        : 1
+core id         : 0
+cpu cores       : 1
+apicid          : 2
+initial apicid  : 2
+fpu             : yes
+fpu_exception   : yes
+cpuid level     : 13
+wp              : yes
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm art rep_good nopl extd_apicid eagerfpu pni pclmulqdq ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm cmp_legacy cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw topoext ssbd rsb_ctxsw ibpb vmmcall fsgsbase tsc_adjust bmi1 avx2 smep bmi2 rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 retpoline_amd virt_ssbd arat umip
+bogomips        : 5789.12
+TLB size        : 1024 4K pages
+clflush size    : 64
+cache_alignment : 64
+address sizes   : 48 bits physical, 48 bits virtual
+power management:
+
+processor       : 3
+vendor_id       : AuthenticAMD
+cpu family      : 23
+model           : 1
+model name      : AMD EPYC Processor (with IBPB)
+stepping        : 2
+microcode       : 0x1000065
+cpu MHz         : 2894.562
+cache size      : 512 KB
+physical id     : 3
+siblings        : 1
+core id         : 0
+cpu cores       : 1
+apicid          : 3
+initial apicid  : 3
+fpu             : yes
+fpu_exception   : yes
+cpuid level     : 13
+wp              : yes
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm art rep_good nopl extd_apicid eagerfpu pni pclmulqdq ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm cmp_legacy cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw topoext ssbd rsb_ctxsw ibpb vmmcall fsgsbase tsc_adjust bmi1 avx2 smep bmi2 rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 retpoline_amd virt_ssbd arat umip
+bogomips        : 5789.12
+TLB size        : 1024 4K pages
+clflush size    : 64
+cache_alignment : 64
+address sizes   : 48 bits physical, 48 bits virtual
+power management:
+
+
+3.
+(The time reported is the time takes to run 100 iterations of both method)
+Jaccobi
+N = 10 Running without OpenMp
+ Iteration       Residual
+         0  10.000000
+         1   9.110434
+         2   8.522030
+         3   8.048801
+         4   7.641663
+         5   7.278818
+         6   6.948322
+         7   6.642820
+         8   6.357457
+         9   6.088891
+        10   5.834751
+        11   5.593312
+        12   5.363286
+        13   5.143687
+        14   4.933737
+        15   4.732803
+        16   4.540355
+        17   4.355940
+        18   4.179154
+        19   4.009639
+        20   3.847064
+        21   3.691124
+        22   3.541536
+        23   3.398030
+        24   3.260352
+        25   3.128263
+        26   3.001531
+        27   2.879937
+        28   2.763272
+        29   2.651336
+        30   2.543935
+        31   2.440885
+        32   2.342011
+        33   2.247142
+        34   2.156116
+        35   2.068778
+        36   1.984977
+        37   1.904572
+        38   1.827423
+        39   1.753399
+        40   1.682374
+        41   1.614226
+        42   1.548839
+        43   1.486100
+        44   1.425902
+        45   1.368143
+        46   1.312724
+        47   1.259549
+        48   1.208529
+        49   1.159575
+        50   1.112604
+        51   1.067536
+        52   1.024293
+        53   0.982802
+        54   0.942992
+        55   0.904794
+        56   0.868143
+        57   0.832977
+        58   0.799236
+        59   0.766861
+        60   0.735798
+        61   0.705993
+        62   0.677395
+        63   0.649956
+        64   0.623628
+        65   0.598367
+        66   0.574129
+        67   0.550873
+        68   0.528558
+        69   0.507148
+        70   0.486605
+        71   0.466894
+        72   0.447982
+        73   0.429835
+        74   0.412424
+        75   0.395718
+        76   0.379688
+        77   0.364308
+        78   0.349551
+        79   0.335392
+        80   0.321806
+        81   0.308771
+        82   0.296264
+        83   0.284263
+        84   0.272748
+        85   0.261700
+        86   0.251099
+        87   0.240928
+        88   0.231169
+        89   0.221805
+        90   0.212820
+        91   0.204199
+        92   0.195928
+        93   0.187991
+        94   0.180376
+        95   0.173070
+        96   0.166059
+        97   0.159333
+        98   0.152879
+        99   0.146686
+       100   0.140744
+       101   0.135043
+       102   0.129573
+       103   0.124324
+       104   0.119288
+       105   0.114456
+       106   0.109820
+       107   0.105371
+       108   0.101103
+       109   0.097008
+       110   0.093078
+       111   0.089308
+       112   0.085690
+       113   0.082219
+       114   0.078889
+       115   0.075693
+       116   0.072627
+       117   0.069685
+       118   0.066863
+       119   0.064154
+       120   0.061555
+       121   0.059062
+       122   0.056670
+       123   0.054374
+       124   0.052172
+       125   0.050058
+       126   0.048031
+       127   0.046085
+       128   0.044218
+       129   0.042427
+       130   0.040708
+       131   0.039059
+       132   0.037477
+       133   0.035959
+       134   0.034503
+       135   0.033105
+       136   0.031764
+       137   0.030477
+       138   0.029243
+       139   0.028058
+       140   0.026922
+       141   0.025831
+       142   0.024785
+       143   0.023781
+       144   0.022818
+       145   0.021893
+       146   0.021006
+       147   0.020156
+       148   0.019339
+       149   0.018556
+       150   0.017804
+       151   0.017083
+       152   0.016391
+       153   0.015727
+       154   0.015090
+       155   0.014479
+       156   0.013892
+       157   0.013329
+       158   0.012790
+       159   0.012271
+       160   0.011774
+       161   0.011297
+       162   0.010840
+       163   0.010401
+       164   0.009979
+       165   0.009575
+       166   0.009187
+       167   0.008815
+       168   0.008458
+       169   0.008115
+       170   0.007787
+       171   0.007471
+       172   0.007169
+       173   0.006878
+       174   0.006600
+       175   0.006332
+       176   0.006076
+       177   0.005830
+       178   0.005594
+       179   0.005367
+       180   0.005150
+       181   0.004941
+       182   0.004741
+       183   0.004549
+       184   0.004365
+       185   0.004188
+       186   0.004018
+       187   0.003855
+       188   0.003699
+       189   0.003549
+       190   0.003406
+       191   0.003268
+       192   0.003135
+       193   0.003008
+       194   0.002886
+       195   0.002770
+       196   0.002657
+       197   0.002550
+       198   0.002446
+       199   0.002347
+       200   0.002252
+       201   0.002161
+       202   0.002073
+       203   0.001989
+       204   0.001909
+       205   0.001832
+       206   0.001757
+       207   0.001686
+       208   0.001618
+       209   0.001552
+       210   0.001489
+       211   0.001429
+       212   0.001371
+       213   0.001316
+       214   0.001262
+       215   0.001211
+       216   0.001162
+       217   0.001115
+       218   0.001070
+       219   0.001027
+       220   0.000985
+Time:   0.000015
+We can see the method do converge. Then, let increase the number N.
+
+N = 1000
+5000 888.157673
+-O3 flag
+Time:   0.124969
+-O0 flag
+Time:   0.735178
+
+When N = 1000, we can see that the covergence speed slow down dramatically, after 5000 iteration, the residual only decreses about 122. Let's continoue to increase N.
+
+N = 10000
+5000 9888.157836
+-O3 flag
+Time:  46.994597
+-O0 flag 
+Time: 111.075705
+This time, 5000 iteration just took me forever, and we can see the residual nearly changed. 
+
+Now let test the parallel case,
+ Iteration       Residual
+         0  10.000000
+         1   9.096703
+         2   8.512858
+         3   8.062682
+         4   7.632772
+         5   7.266762
+         6   6.937715
+         7   6.623697
+         8   6.373552
+         9   6.094557
+        10   5.724543
+        11   5.586427
+        12   5.326335
+        13   5.114726
+        14   4.933737
+        15   4.723022
+        16   4.474920
+        17   4.330484
+        18   4.142386
+        19   3.990136
+        20   3.805363
+        21   3.626144
+        22   3.542874
+        23   3.391765
+        24   3.259193
+        25   3.100295
+        26   2.974690
+        27   2.853476
+        28   2.763147
+        29   2.638959
+        30   2.546233
+        31   2.431754
+        32   2.342011
+        33   2.245093
+        34   2.153286
+        35   2.067571
+        36   1.960430
+        37   1.885236
+        38   1.822954
+        39   1.729820
+        40   1.682374
+        41   1.599405
+        42   1.546559
+        43   1.486100
+        44   1.412660
+        45   1.365042
+        46   1.307794
+        47   1.246618
+        48   1.209907
+        49   1.146938
+        50   1.108272
+        51   1.046549
+        52   1.028948
+        53   0.984950
+        54   0.934390
+        55   0.904794
+        56   0.872609
+        57   0.832977
+        58   0.796699
+        59   0.760980
+        60   0.734852
+        61   0.698350
+        62   0.670322
+        63   0.643845
+        64   0.623827
+        65   0.587045
+        66   0.573876
+        67   0.551293
+        68   0.527724
+        69   0.501664
+        70   0.478526
+        71   0.466277
+        72   0.446482
+        73   0.427498
+        74   0.407487
+        75   0.389462
+        76   0.379573
+        77   0.361833
+        78   0.343998
+        79   0.333968
+        80   0.321940
+        81   0.305923
+        82   0.296309
+        83   0.281545
+        84   0.272748
+        85   0.261936
+        86   0.249518
+        87   0.241145
+        88   0.230863
+        89   0.221737
+        90   0.212820
+        91   0.203372
+        92   0.193998
+        93   0.187322
+        94   0.180404
+        95   0.172334
+        96   0.165680
+        97   0.159645
+        98   0.151864
+        99   0.146686
+       100   0.141462
+       101   0.135043
+       102   0.129402
+       103   0.124193
+       104   0.118646
+       105   0.114305
+       106   0.111444
+       107   0.105547
+       108   0.100552
+       109   0.096287
+       110   0.092196
+       111   0.089073
+       112   0.085487
+       113   0.081393
+       114   0.078574
+       115   0.074276
+       116   0.071147
+       117   0.069827
+       118   0.066650
+       119   0.064076
+       120   0.061555
+       121   0.058703
+       122   0.056670
+       123   0.054191
+       124   0.052172
+       125   0.049496
+       126   0.048031
+       127   0.046011
+       128   0.044218
+       129   0.042575
+       130   0.040795
+       131   0.038762
+       132   0.037452
+       133   0.036061
+       134   0.034503
+       135   0.032826
+       136   0.031703
+       137   0.030709
+       138   0.029317
+       139   0.027792
+       140   0.026998
+       141   0.025639
+       142   0.024816
+       143   0.023950
+       144   0.022681
+       145   0.021634
+       146   0.021006
+       147   0.020140
+       148   0.019343
+       149   0.018556
+       150   0.017792
+       151   0.017004
+       152   0.016237
+       153   0.015800
+       154   0.014972
+       155   0.014518
+       156   0.013892
+       157   0.013417
+       158   0.012791
+       159   0.012244
+       160   0.011760
+       161   0.011278
+       162   0.010786
+       163   0.010397
+       164   0.009979
+       165   0.009577
+       166   0.009187
+       167   0.008812
+       168   0.008421
+       169   0.008040
+       170   0.007715
+       171   0.007471
+       172   0.007149
+       173   0.006814
+       174   0.006607
+       175   0.006314
+       176   0.006028
+       177   0.005808
+       178   0.005620
+       179   0.005300
+       180   0.005136
+       181   0.004944
+       182   0.004757
+       183   0.004500
+       184   0.004389
+       185   0.004157
+       186   0.003997
+       187   0.003841
+       188   0.003669
+       189   0.003516
+       190   0.003406
+       191   0.003259
+       192   0.003142
+       193   0.003007
+       194   0.002896
+       195   0.002729
+       196   0.002684
+       197   0.002537
+       198   0.002430
+       199   0.002347
+       200   0.002239
+       201   0.002156
+       202   0.002088
+       203   0.001968
+       204   0.001899
+       205   0.001832
+       206   0.001742
+       207   0.001686
+       208   0.001633
+       209   0.001549
+       210   0.001489
+       211   0.001429
+       212   0.001367
+       213   0.001316
+       214   0.001257
+       215   0.001211
+       216   0.001162
+       217   0.001106
+       218   0.001070
+       219   0.001021
+       220   0.000984
+Time:   0.000803
+
+N = 1000
+Iteration       Residual
+ 5000         887.960469
+Time:   0.278450
+Given that it takes foever to run 5000 iterations for N = 10000, I will only test the timings and thread used.
+N = 10000
+Time:  38.157547
+
+Let change the number of threads, setting N = 1000
+
+OMP_NUM_THREADS=4 
+Time:   0.282131
+
+OMP_NUM_THREADS=8
+Time:   0.472826
+
+OMP_NUM_THREADS=16
+Time:   0.642625
+
+OMP_NUM_THREADS=32
+Time:   0.421753
+
+OMP_NUM_THREADS=64
+Time:   0.514455
+
+We can see that when we change the number of the threads, the timing varies differently. And when we using -O3 flag, the serial code is faster than the parallel code. One reason that I come up with would be memeory access, multiple threads is trying to read the same memory, which cause certain traffic to slow thing down. When we use -O0 flag, we can see that parallel code does a much better job.  
+
+GS2D,
+N = 10 
+ Iteration       Residual
+         0  10.000000
+         1  12.457428
+         2  11.092044
+         3  10.058979
+         4   9.192077
+         5   8.431055
+         6   7.747377
+         7   7.125765
+         8   6.557090
+         9   6.035212
+        10   5.555523
+        11   5.114261
+        12   4.708186
+        13   4.334418
+        14   3.990352
+        15   3.673611
+        16   3.382018
+        17   3.113574
+        18   2.866438
+        19   2.638919
+        20   2.429459
+        21   2.236625
+        22   2.059097
+        23   1.895659
+        24   1.745195
+        25   1.606673
+        26   1.479146
+        27   1.361742
+        28   1.253656
+        29   1.154149
+        30   1.062541
+        31   0.978203
+        32   0.900560
+        33   0.829080
+        34   0.763273
+        35   0.702690
+        36   0.646915
+        37   0.595567
+        38   0.548295
+        39   0.504775
+        40   0.464709
+        41   0.427824
+        42   0.393866
+        43   0.362604
+        44   0.333823
+        45   0.307326
+        46   0.282933
+        47   0.260475
+        48   0.239801
+        49   0.220767
+        50   0.203244
+        51   0.187112
+        52   0.172260
+        53   0.158587
+        54   0.146000
+        55   0.134411
+        56   0.123743
+        57   0.113921
+        58   0.104878
+        59   0.096554
+        60   0.088890
+        61   0.081835
+        62   0.075339
+        63   0.069359
+        64   0.063854
+        65   0.058786
+        66   0.054120
+        67   0.049824
+        68   0.045869
+        69   0.042229
+        70   0.038877
+        71   0.035791
+        72   0.032950
+        73   0.030335
+        74   0.027927
+        75   0.025710
+        76   0.023670
+        77   0.021791
+        78   0.020061
+        79   0.018469
+        80   0.017003
+        81   0.015653
+        82   0.014411
+        83   0.013267
+        84   0.012214
+        85   0.011245
+        86   0.010352
+        87   0.009530
+        88   0.008774
+        89   0.008078
+        90   0.007436
+        91   0.006846
+        92   0.006303
+        93   0.005802
+        94   0.005342
+        95   0.004918
+        96   0.004528
+        97   0.004168
+        98   0.003837
+        99   0.003533
+       100   0.003252
+       101   0.002994
+       102   0.002757
+       103   0.002538
+       104   0.002336
+       105   0.002151
+       106   0.001980
+       107   0.001823
+       108   0.001678
+       109   0.001545
+       110   0.001422
+       111   0.001310
+       112   0.001206
+       113   0.001110
+       114   0.001022
+       115   0.000941
+Time:   0.000016
+Here we only test with timings for 100 iterations.
+N = 1000
+-O3 flag
+Time:   0.156897
+-O0 flage
+Time:   0.770165
+
+N = 10000
+-O3 flag 
+Time:  19.652583
+-O0 flage
+Time:  77.222308
+
+N = 10 with OpenMP
+ Iteration       Residual
+         0  10.000000
+         1  12.457428
+         2  11.092044
+         3  10.058979
+         4   9.192077
+         5   8.431055
+         6   7.747377
+         7   7.125765
+         8   6.557090
+         9   6.035212
+        10   5.555523
+        11   5.114261
+        12   4.708186
+        13   4.334418
+        14   3.990352
+        15   3.673611
+        16   3.382018
+        17   3.113574
+        18   2.866438
+        19   2.638919
+        20   2.429459
+        21   2.236625
+        22   2.059097
+        23   1.895659
+        24   1.745195
+        25   1.606673
+        26   1.479146
+        27   1.361742
+        28   1.253656
+        29   1.154149
+        30   1.062541
+        31   0.978203
+        32   0.900560
+        33   0.829080
+        34   0.763273
+        35   0.702690
+        36   0.646915
+        37   0.595567
+        38   0.548295
+        39   0.504775
+        40   0.464709
+        41   0.427824
+        42   0.393866
+        43   0.362604
+        44   0.333823
+        45   0.307326
+        46   0.282933
+        47   0.260475
+        48   0.239801
+        49   0.220767
+        50   0.203244
+        51   0.187112
+        52   0.172260
+        53   0.158587
+        54   0.146000
+        55   0.134411
+        56   0.123743
+        57   0.113921
+        58   0.104878
+        59   0.096554
+        60   0.088890
+        61   0.081835
+        62   0.075339
+        63   0.069359
+        64   0.063854
+        65   0.058786
+        66   0.054120
+        67   0.049824
+        68   0.045869
+        69   0.042229
+        70   0.038877
+        71   0.035791
+        72   0.032950
+        73   0.030335
+        74   0.027927
+        75   0.025653
+        76   0.023670
+        77   0.021791
+        78   0.020061
+        79   0.018469
+        80   0.017003
+        81   0.015653
+        82   0.014411
+        83   0.013267
+        84   0.012214
+        85   0.011245
+        86   0.010352
+        87   0.009530
+        88   0.008774
+        89   0.008078
+        90   0.007436
+        91   0.006846
+        92   0.006303
+        93   0.005802
+        94   0.005342
+        95   0.004918
+        96   0.004528
+        97   0.004168
+        98   0.003837
+        99   0.003533
+       100   0.003252
+       101   0.002994
+       102   0.002757
+       103   0.002538
+       104   0.002336
+       105   0.002151
+       106   0.001980
+       107   0.001823
+       108   0.001678
+       109   0.001545
+       110   0.001422
+       111   0.001310
+       112   0.001206
+       113   0.001110
+       114   0.001022
+       115   0.000941
+Time:   0.090026
+
+N = 1000
+Time:   0.588056
+
+N = 10000
+Time:  57.583483
+
+Let change the number of threads, setting N = 1000
+
+OMP_NUM_THREADS=4 
+Time:   0.238672
+
+OMP_NUM_THREADS=8
+Time:   0.249667
+
+OMP_NUM_THREADS=16
+Time:   0.309857
+
+OMP_NUM_THREADS=32
+Time:   0.376857
+
+OMP_NUM_THREADS=64
+Time:   0.417771
+
+We can see the similar behaviors as Jacobi methods, we do not see speed up compare to the -O3 flag. When compare to the -O0 flag, the parallel code does a better job. I think it's still a rather memory-bound problem and all threads share the same memory and thus complete for memory bandwidth.   
