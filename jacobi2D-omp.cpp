@@ -9,7 +9,7 @@
 
 // Given that we are using f = 1, so I ingore the term f, just replace it with 1.
 void Jacobi(long N, double *u) {
-  double h = 1.0/(N+1);
+  double h = 1.0 / ( N + 1 );
   double hsq = h*h;
   double *uu = (double*) malloc( (N+2)*(N+2) * sizeof(double)); // (N+2)^2 
   long k, up, down, left, right;
