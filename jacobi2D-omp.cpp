@@ -56,6 +56,14 @@ void Jacobi(long N, double *u) {
 	}
   }
 
+  for (long i = 0; i <=N+1; i++) {
+	for (long j = 0; j <=N+1; j++) {
+		printf("%d", u[i]);
+	}
+	printf("\n");
+  }
+
+
   free(uu);
 }
 
@@ -122,7 +130,7 @@ int main(int argc, char** argv) {
   
   printf("%10d %10f\n", iter, Res);
 
-  while (iter<5000 && Rr <= 1e4){
+  while (iter<10 && Rr <= 1e4){
    	Jacobi(N, u);
    	res = residual(N,u);
    	Rr = Res/res;
