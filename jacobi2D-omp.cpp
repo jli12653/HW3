@@ -61,8 +61,8 @@ double residual(long N, double* u){
 	for (long j = 1; j <=N; j++) {
 		up = i + N;
 		down = i - N;
-		left = i % N - 1;
-		right = i % N + 1;
+		left = i - 1;
+		right = i + 1;
 	  
 		U = u[i];
 	
@@ -70,10 +70,10 @@ double residual(long N, double* u){
 	 	U_up = u[up];
 		
 	
-		U_left = u[i-1];
+		U_left = u[left];
 	
 	
-		U_right = u[i+1];
+		U_right = u[right];
 	
 
 		U_down = u[down];
