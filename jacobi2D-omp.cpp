@@ -33,17 +33,15 @@ void Jacobi(int N, double *u) {
 		  right = i + 1;
 	
 
-		double U_up = u[up];
-		double U_left = u[left];
-		double U_right = u[right];
-		double U_down = u[down];
+		// double U_up = u[up];
+		// double U_left = u[left];
+		// double U_right = u[right];
+		// double U_down = u[down];
 
     //+ u[up] + u[left] + u[right] + u[down]
     //+ U_up + U_left + U_right + U_down
-		#pragma omp atomic read
-    uu[i] = (u[up] + u[left] + u[right] + u[down]);
-
-    uu[i] *=0.25;
+		//#pragma omp atomic read
+    uu[i] = 0.25*(hsq + u[up] + u[left] + u[right] + u[down]);
 
 	}
 //}
