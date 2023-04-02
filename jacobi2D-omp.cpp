@@ -30,7 +30,7 @@ void Jacobi(long N, double *u) {
 
   #pragma omp parallel for
   for (long i = 0; i < N*N; i++) {
-	long j = (i/N+1)*(N+2) + i % N + 1
+	long j = (i/N+1)*(N+2) + i % N + 1;
 	double U = 1.0/4*(h*h+ uu[j-1] + uu[j+1] + uu[j - (N+2)] + uu[j+(N+2)]);
   	u[i] = U;  
   }
@@ -40,14 +40,37 @@ void Jacobi(long N, double *u) {
 
 
 double residual(long N, double* u){
-	double r = 0.0;
+  double h = 1.0/(N+1);
+  double r, temp = 0.0;
+  double *uu = (double*) malloc((N+2)*(N+2) * sizeof(double)); // (N+2)^2 
 	
-	for (long i=0; i<N*N; i++){
-		double U = u[i]
-		r += pow(U-1.0,2)	
-  }	
-	return sqrt(r);
-} 
+  // creating the entire plane of points (N+2)*(N+2)
+  #pragma omp parallel for
+  for (long i = 0; i < (N+2)*(N+2); i++) {
+  	if (i / (N+2) == 0 || i / (N+2) == N + 1 ){
+		uu[i] = 0;	
+	}
+	else{
+		if (i % (N+2) == 0 || i % (N+2) == N+1){ 
+			uu[i] = 0;
+		}
+		else {
+			uu[i] = u[(i/(N+2)-1)*N + (i % (N+2)-1)];
+		}  
+	}
+  }
+
+  #pragma omp parallel for reduction (+:r)
+  for (long i = 0; i < N*N; i++) {
+	long j = (i/N+1)*(N+2) + i % N + 1;
+	temp = (4*uu[j] - uu[j-1] - uu[j+1] - uu[j - (N+2)] - uu[j+(N+2)])/h/h - 1;
+  	r += temp * temp;  
+  }
+
+  free(uu);
+	
+  return sqrt(r);
+}
 
 int main(int argc, char** argv) {
   const long N = 100000;
@@ -66,25 +89,22 @@ int main(int argc, char** argv) {
   int iter = 0;
   
   
-  //printf("%10d %10f\n", iter, Res);
+  printf("%10d %10f\n", iter, Res);
 
-  // PART I
-  //while (iter<5000 && Rr <= 1e4){
-  //  	Gauss_Seidel(N, u);
-  //  	res = residual(N,u);
-  //  	Rr = Res/res;
-  //  	iter++;
-  //       printf("%10d %10f\n", iter, res);
-  //}
+  while (iter<5000 && Rr <= 1e4){
+   	Jacobi(N, u);
+   	res = residual(N,u);
+   	Rr = Res/res;
+   	iter++;
+        printf("%10d %10f\n", iter, res);
+  }
 
-  // PART II
-  Timer t;
-  t.tic();
+  double tt = omp_get_wtime();
   while (iter<100) {
-    	Gauss_Seidel(N, u);
+    	Jacobi(N, u);
     	iter++;
   }
-  double time = t.toc();
+  double time = omp_get_wtime() - tt;
   printf("Time: %10f\n", time);
 
   free(u);
