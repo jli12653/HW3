@@ -47,6 +47,7 @@ void Jacobi(long N, double *u) {
 double residual(long N, double* u){
   double h = 1.0/(N+1);
   double r, temp = 0.0;
+  long j;
   double *uu = (double*) malloc((N+2)*(N+2) * sizeof(double)); // (N+2)^2 
 	
 	
@@ -69,13 +70,8 @@ double residual(long N, double* u){
 
   #pragma omp parallel for reduction (+:r)
   for (long i = 0; i < N*N; i++) {
-	long j = (i/N+1)*(N+2) + i % N + 1;
-	double U = uu[j-1];
-	double UU = uu[j+1];
-	double UUU = uu[j - (N+2)];
-	double UUUU = uu[j + (N+2)];
-        double UUUUU = uu[j];
-	temp = (4*UUUUU - U - UU - UUU - UUUU)/h/h - 1;
+	j = (i/N+1)*(N+2) + i % N + 1;
+	temp = (4.0*uu[j] - uu[j-1] - uu[j+1] - uu[j - (N+2)] - uu[j + (N+2)])/h/h - 1;
   	r += temp * temp;  
   }
 
