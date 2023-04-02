@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
   printf(" Iteration       Residual\n");
   
     
-  double* u = (double*) malloc(N * sizeof(double)); // N
+  double* u = (double*) malloc(N * N * sizeof(double)); // N
  
 
   // Initialize u
