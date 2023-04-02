@@ -10,39 +10,41 @@
 // Given that we are using f = 1, so I ingore the term f, just replace it with 1.
 void Jacobi(long N, double *u) {
   double h = 1.0/(N+1);
+  double hsq = h*h;
   double *uu = (double*) malloc(N*N * sizeof(double)); // (N+2)^2 
-  long up, down, left, right;
+  long k, up, down, left, right;
 	
   // creating the entire plane of points (N+2)*(N+2)
   #pragma omp parallel for
-  for (long i = 0; i < N*N; i++) {
-  	up = i + N;
-	down = i - N;
-	left = i % N - 1;
-	right = i % N + 1;
+  for (long i = 1; i <=N; i++) {
+	for (long j = 1; j <=N; j++) {
+		k = i * (N + 2) + j;
+  		up = k + N;
+		down = k - N;
+		left = k - 1;
+		right = k + 1;
 	
-	double U_up, U_down, U_left, U_right = 0.0;
+		double U_up, U_down, U_left, U_right = 0.0;
 	
-	if (up >= N^2) U_up = 0;
-	else U_up = u[up];
+	
+		U_up = u[up];
 		
-	if (left < 0) U_left = 0;
-	else U_left = u[i-1];
 	
-	if (right >= N) U_right = 0;
-	else U_right = u[i+1];
+		U_left = u[left];
 	
-	if (down < 0) U_down = 0;
-	else U_down = u[down];
+	
+		U_right = u[right];
+	
+	
+		U_down = u[down];
 		
-        uu[i] = 1.0/4*(h*h + U_up + U_down + U_right + U_left);
+        	uu[i] = 1.0/4*(hsq + U_up + U_down + U_right + U_left);
+	}
   }
 
-  #pragma omp parallel for
-  for (long i = 0; i < N*N; i++) {
-	double NewU = uu[i];
-  	u[i] = NewU;  
-  }
+  double* utemp = u;
+  u = uu;
+  uu = utemp;
 
   free(uu);
 }
@@ -50,35 +52,38 @@ void Jacobi(long N, double *u) {
 
 double residual(long N, double* u){
   double h = 1.0/(N+1);
+  double invhsq = 1.0/h/h;
   double r, temp = 0.0;
   long up, down, left, right;
   double U_up, U_down, U_left, U_right, U = 0.0;
 
   #pragma omp parallel for reduction (+:r)
-  for (long i = 0; i < N*N; i++) {
-	up = i + N;
-	down = i - N;
-	left = i % N - 1;
-	right = i % N + 1;
+  for (long i = 1; i <=N; i++) {
+	for (long j = 1; j <=N; j++) {
+		up = i + N;
+		down = i - N;
+		left = i % N - 1;
+		right = i % N + 1;
 	  
-	U = u[i];
+		U = u[i];
 	
-	if (up >= N^2) U_up = 0;
-	else U_up = u[up];
+	
+	 	U_up = u[up];
 		
-	if (left < 0) U_left = 0;
-	else U_left = u[i-1];
 	
-	if (right >= N) U_right = 0;
-	else U_right = u[i+1];
-	
-	if (down < 0) U_down = 0;
-	else U_down = u[down];
+		U_left = u[i-1];
 	
 	
-	temp = (4.0*U - U_up - U_down - U_left - U_right)/h/h - 1.0;
+		U_right = u[i+1];
+	
+
+		U_down = u[down];
+	
+	
+		temp = (4.0*U - U_up - U_down - U_left - U_right)*invhsq - 1.0;
 	  
-  	r += temp * temp;  
+  		r += temp * temp; 
+	}
   }
 
 	
@@ -91,11 +96,11 @@ int main(int argc, char** argv) {
   printf(" Iteration       Residual\n");
   
     
-  double* u = (double*) malloc(N * N * sizeof(double)); // N
+  double* u = (double*) malloc((N+2) * (N+2) * sizeof(double)); // N
  
 
   // Initialize u
-  for (long i = 0; i < N*N; i++) u[i] = 0.0;
+  for (long i = 0; i < (N+2)*(N+2); i++) u[i] = 0.0;
   double Res = residual(N , u);
   double res = 0.0;
   double Rr = 0.0;
